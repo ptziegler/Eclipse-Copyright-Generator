@@ -26,11 +26,16 @@ public class CopyrightSettings {
   protected String includePattern;
   /** Pattern for resources exclusion */
   protected String excludePattern;
-  /** Flag indicating settings having impact on resources selection have changed */
+  /**
+   * Flag indicating settings having impact on resources selection have changed
+   */
   protected boolean changed;
   /** Files on which to apply the copyright */
   protected IFile[] files;
-  /** Flag indicating if existing header comments must be replaced (true) or not (false). */
+  /**
+   * Flag indicating if existing header comments must be replaced (true) or not
+   * (false).
+   */
   protected boolean forceApply;
   /** The copyright definition to apply */
   protected Copyright copyright;
@@ -85,7 +90,7 @@ public class CopyrightSettings {
 
   public void setForceApply(boolean forceApply) {
     this.forceApply = forceApply;
-    this.changed    = true;
+    this.changed = true;
   }
 
   public void setLicenseFile(String licenseFile) {
@@ -94,7 +99,7 @@ public class CopyrightSettings {
 
   public void setOverride(int override) {
     this.override = override;
-    this.changed  = true;
+    this.changed = true;
   }
 
   public void setIncludePattern(String pattern) {
@@ -109,7 +114,7 @@ public class CopyrightSettings {
 
   public void setProjects(IProject[] projects) {
     this.projects = projects;
-    this.changed  = true;
+    this.changed = true;
   }
 
   public void setFiles(IFile[] files) {

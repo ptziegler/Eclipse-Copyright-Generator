@@ -133,24 +133,23 @@ public class CopyrightManager {
   }
 
   /**
-   * Applies copyright based on the given settings, reporting operations to
-   * the given monitor.
+   * Applies copyright based on the given settings, reporting operations to the
+   * given monitor.
    * 
    * @param settings settings defining the copyright to apply
-   * @param monitor monitor for reporting operations
+   * @param monitor  monitor for reporting operations
    * @return Status of the execution
    * @throws CopyrightException
    */
-  public static IStatus applyCopyright(final CopyrightSettings settings, IProgressMonitor monitor) throws CopyrightException {
+  public static IStatus applyCopyright(final CopyrightSettings settings, IProgressMonitor monitor)
+      throws CopyrightException {
     IStatus retval = Status.OK_STATUS;
 
     monitor.beginTask(Messages.CopyrightManager_taskName, settings.getFiles().length);
     try {
       String user = System.getProperty("user.name"); //$NON-NLS-1$
-      String owner = Activator.getDefault()
-    		  .getPreferenceStore()
-    		  .getString(Constants.PREFERENCES_OWNER);
-      if ( owner.length() <= 0 ) {
+      String owner = Activator.getDefault().getPreferenceStore().getString(Constants.PREFERENCES_OWNER);
+      if (owner.length() <= 0) {
         owner = user;
       }
       Map<String, String> parameters = new HashMap<String, String>();
@@ -159,13 +158,14 @@ public class CopyrightManager {
 
       // Creates the license files in the selected projects
       String filename = settings.getLicenseFile();
-      if ( filename != null ) {
+      if (filename != null) {
         try {
           for (IProject project : settings.getProjects()) {
             IPath path = project.getLocation();
-            if ( path == null ) continue;
+            if (path == null)
+              continue;
             File licenseFile = new File(path.toFile(), filename);
-            if ( ! licenseFile.exists() ) {
+            if (!licenseFile.exists()) {
               writeLicense(licenseFile, settings.getCopyright());
             }
           }
@@ -182,7 +182,7 @@ public class CopyrightManager {
         parameters.put(Constants.P_FILE_PATH, file.getProjectRelativePath().toString());
         parameters.put(Constants.P_PROJECT_NAME, file.getProject().getName());
         applyCopyright(file, settings, parameters);
-        if ( monitor.isCanceled() ) {
+        if (monitor.isCanceled()) {
           retval = Status.CANCEL_STATUS;
           break;
         }
@@ -191,9 +191,7 @@ public class CopyrightManager {
 
       // Refreshes the workspace
       try {
-        ResourcesPlugin.getWorkspace()
-                       .getRoot()
-                       .refreshLocal(IResource.DEPTH_INFINITE, null);
+        ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
       } catch (CoreException e) {
         throw new CopyrightException(e.getMessage(), e);
       }
@@ -213,8 +211,8 @@ public class CopyrightManager {
    * @param parameters
    * @throws CopyrightException
    */
-  private static void applyCopyright(IFile file, final CopyrightSettings settings,
-        Map<String, String> parameters) throws CopyrightException {
+  private static void applyCopyright(IFile file, final CopyrightSettings settings, Map<String, String> parameters)
+      throws CopyrightException {
     File f = file.getLocation().toFile();
     BufferedReader reader = null;
     StringWriter buffer = null;
@@ -227,7 +225,8 @@ public class CopyrightManager {
     try {
       // Gets the header format for the file's content type
       IContentType ct = getContentType(file);
-      if ( ct == null ) return;
+      if (ct == null)
+        return;
       HeaderFormat format = getHeaderFormat(settings, file, ct);
       String charset = file.getCharset(true);
 
@@ -237,33 +236,34 @@ public class CopyrightManager {
 
       // Reads the first line of the file
       firstLine = reader.readLine();
-      if ( firstLine == null ) return;
+      if (firstLine == null)
+        return;
 
       // Preserves the first line if defined in the header format
-      if ( format.skipFirstLine(firstLine) ) {
+      if (format.skipFirstLine(firstLine)) {
         writer.println(firstLine);
         firstLine = reader.readLine();
       }
 
       // Gets the copyright header
       String headerText = null;
-      if ( settings.getOverride() == CopyrightSettings.OVERRIDE_NONE ) {
+      if (settings.getOverride() == CopyrightSettings.OVERRIDE_NONE) {
         ProjectPreferences preferences = getProjectPreferences(file.getProject());
-        if ( preferences != ProjectPreferences.NO_PREFS ) {
+        if (preferences != ProjectPreferences.NO_PREFS) {
           headerText = preferences.getHeaderText();
         }
-        if ( preferences.getOwner() != null ) {
+        if (preferences.getOwner() != null) {
           parameters.put(Constants.P_OWNER, preferences.getOwner());
         }
       }
-      if ( headerText == null ) {
+      if (headerText == null) {
         headerText = settings.getCopyright().headerText;
       }
 
       // Writes the copyright header
       BufferedReader header = new BufferedReader(new StringReader(headerText));
       writer.println(format.beginLine);
-      while ( (line = header.readLine()) != null ) {
+      while ((line = header.readLine()) != null) {
         writer.println(format.linePrefix + substitute(line, parameters));
       }
       writer.println(format.endLine);
@@ -277,61 +277,66 @@ public class CopyrightManager {
       // Writes the file content, except an optionally existing header
       int headerStatus = 0;
       line = firstLine;
-      while ( line != null ) {
-        switch ( headerStatus ) {
-          case 0 :
-            if ( line.trim().length() > 0 ) {
-              if ( line.startsWith(format.beginLine.substring(0, Math.min(format.beginLine.length(), 10))) ) {
-                headerStatus = 1;
-                break;
-              } else {
-                headerStatus = 2;
-                firstInstructionFound = true;
-              }
+      while (line != null) {
+        switch (headerStatus) {
+        case 0:
+          if (line.trim().length() > 0) {
+            if (line.startsWith(format.beginLine.substring(0, Math.min(format.beginLine.length(), 10)))) {
+              headerStatus = 1;
+              break;
             } else {
-              if ( ! firstInstructionFound ) {
-                break;
-              }
+              headerStatus = 2;
+              firstInstructionFound = true;
             }
-            writer.println(line);
-            break;
-          case 1 :
-            if ( format.lineCommentFormat ) {
-              if ( line.startsWith(format.endLine.substring(0, Math.min(format.endLine.length(), 10)))
-                   || ! line.startsWith(format.linePrefix) ) {
-                headerStatus = 2;
-              }
-            } else if ( line.trim().length() > 0
-                        && format.endLine.endsWith(line.substring(Math.max(line.length() - 5, 0)).trim()) ) {
+          } else {
+            if (!firstInstructionFound) {
+              break;
+            }
+          }
+          writer.println(line);
+          break;
+        case 1:
+          if (format.lineCommentFormat) {
+            if (line.startsWith(format.endLine.substring(0, Math.min(format.endLine.length(), 10)))
+                || !line.startsWith(format.linePrefix)) {
               headerStatus = 2;
             }
-            break;
-          case 2 :
-            if ( ! firstInstructionFound ) {
-              if ( line.trim().length() == 0 ) {
-                break;
-              } else {
-                firstInstructionFound = true;
-              }
+          } else if (line.trim().length() > 0
+              && format.endLine.endsWith(line.substring(Math.max(line.length() - 5, 0)).trim())) {
+            headerStatus = 2;
+          }
+          break;
+        case 2:
+          if (!firstInstructionFound) {
+            if (line.trim().length() == 0) {
+              break;
+            } else {
+              firstInstructionFound = true;
             }
-            writer.println(line);
-            break;
+          }
+          writer.println(line);
+          break;
         }
         line = reader.readLine();
       }
 
       // Updates the file content
-      file.setContents(new ByteArrayInputStream(buffer.toString().getBytes(charset)),
-                       true, true, null);
+      file.setContents(new ByteArrayInputStream(buffer.toString().getBytes(charset)), true, true, null);
       file.refreshLocal(0, null);
     } catch (Exception e) {
       throw new CopyrightException(NLS.bind(Messages.CopyrightManager_err_readContent, file.getName()), e);
     } finally {
-      if ( reader != null ) {
-        try { reader.close(); } catch (Exception e) {}
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (Exception e) {
+        }
       }
-      if ( fw != null ) {
-        try { fw.close(); } catch (Exception e) {}
+      if (fw != null) {
+        try {
+          fw.close();
+        } catch (Exception e) {
+        }
       }
     }
   }
@@ -348,10 +353,10 @@ public class CopyrightManager {
   }
 
   /**
-   * Returns concatenation of the text content of CDATA_SECTION child nodes of
-   * the given parent DOM node
+   * Returns concatenation of the text content of CDATA_SECTION child nodes of the
+   * given parent DOM node
    * 
-   * @param node Parent node
+   * @param node      Parent node
    * @param recursive Visit child nodes recursively
    * @return concatenation of the CDATA_SECTION text contents
    */
@@ -364,9 +369,9 @@ public class CopyrightManager {
       if (n == null) {
         continue;
       }
-      if ( n.getNodeType() == Node.CDATA_SECTION_NODE ) {
+      if (n.getNodeType() == Node.CDATA_SECTION_NODE) {
         cdataText.append(((CDATASection) n).getTextContent());
-      } else if ( recursive ) {
+      } else if (recursive) {
         cdataText.append(getCdataTextContent(n, recursive));
       }
     }
@@ -382,9 +387,7 @@ public class CopyrightManager {
   public static IContentType getContentType(IFile file) {
     try {
       IContentDescription description = file.getContentDescription();
-      return description != null
-             ? description.getContentType()
-             : contentTypeManager.findContentTypeFor(file.getName());
+      return description != null ? description.getContentType() : contentTypeManager.findContentTypeFor(file.getName());
     } catch (CoreException e) {
       return null;
     }
@@ -397,9 +400,7 @@ public class CopyrightManager {
    * @return List of default copyrights
    */
   public static List<Copyright> getDefaultCopyrights() {
-    URL url = Activator.getDefault()
-    		.getBundle()
-    		.getResource(REPOSITORY_FILENAME);
+    URL url = Activator.getDefault().getBundle().getResource(REPOSITORY_FILENAME);
     try {
       return readCopyrights(url.openStream());
     } catch (IOException e) {
@@ -410,8 +411,8 @@ public class CopyrightManager {
 
   /**
    * Returns the default headers formats. Defaults are used to initialize the
-   * Eclipse preferences the first time the plugin is used. They can be
-   * restored if needed from the preference page.
+   * Eclipse preferences the first time the plugin is used. They can be restored
+   * if needed from the preference page.
    * 
    * @return List of default formats
    */
@@ -421,42 +422,40 @@ public class CopyrightManager {
     // If here, no file found. Then load the defaults.
     formats.add((HeaderFormat) HeaderFormat.TEXT_HEADER.clone());
     formats.add((HeaderFormat) HeaderFormat.XML_HEADER.clone());
-    if ( contentTypeManager.getContentType(HeaderFormat.CT_CSOURCE) != null ) {
+    if (contentTypeManager.getContentType(HeaderFormat.CT_CSOURCE) != null) {
       formats.add((HeaderFormat) HeaderFormat.CSOURCE_HEADER.clone());
     }
-    if ( contentTypeManager.getContentType(HeaderFormat.CT_CHEADER) != null ) {
+    if (contentTypeManager.getContentType(HeaderFormat.CT_CHEADER) != null) {
       formats.add((HeaderFormat) HeaderFormat.CHEADER_HEADER.clone());
     }
-    if ( contentTypeManager.getContentType(HeaderFormat.CT_CXXSOURCE) != null ) {
+    if (contentTypeManager.getContentType(HeaderFormat.CT_CXXSOURCE) != null) {
       formats.add((HeaderFormat) HeaderFormat.CXXSOURCE_HEADER.clone());
     }
-    if ( contentTypeManager.getContentType(HeaderFormat.CT_CXXHEADER) != null ) {
+    if (contentTypeManager.getContentType(HeaderFormat.CT_CXXHEADER) != null) {
       formats.add((HeaderFormat) HeaderFormat.CXXHEADER_HEADER.clone());
     }
-    if ( contentTypeManager.getContentType(HeaderFormat.CT_JAVA) != null ) {
+    if (contentTypeManager.getContentType(HeaderFormat.CT_JAVA) != null) {
       formats.add((HeaderFormat) HeaderFormat.JAVA_HEADER.clone());
     }
 
-    String[] excludedContentIds = new String[] {
-      "org.eclipse.ant.core.antBuildFile", //$NON-NLS-1$
-      "org.eclipse.jdt.core.JARManifest", //$NON-NLS-1$
-      "org.eclipse.ui.views.log.log" //$NON-NLS-1$
+    String[] excludedContentIds = new String[] { "org.eclipse.ant.core.antBuildFile", //$NON-NLS-1$
+        "org.eclipse.jdt.core.JARManifest", //$NON-NLS-1$
+        "org.eclipse.ui.views.log.log" //$NON-NLS-1$
     };
     for (String contentId : excludedContentIds) {
       IContentType contentType = contentTypeManager.getContentType(contentId);
-      if ( contentType != null ) {
+      if (contentType != null) {
         formats.add(HeaderFormat.createExcluded(contentId));
       }
     }
-    String[] excludedPlugins = new String[] {
-      "org.eclipse.jst.j2ee", //$NON-NLS-1$
-      "org.eclipse.pde" //$NON-NLS-1$
+    String[] excludedPlugins = new String[] { "org.eclipse.jst.j2ee", //$NON-NLS-1$
+        "org.eclipse.pde" //$NON-NLS-1$
     };
     for (String pluginId : excludedPlugins) {
       for (IContentType contentType : contentTypeManager.getAllContentTypes()) {
         String contentId = contentType.getId();
         int i = contentId.lastIndexOf('.');
-        if ( contentId.substring(0, i).equals(pluginId) ) {
+        if (contentId.substring(0, i).equals(pluginId)) {
           formats.add(HeaderFormat.createExcluded(contentId));
         }
       }
@@ -466,18 +465,15 @@ public class CopyrightManager {
   }
 
   /**
-   * Returns the file containing the headers definitions. This file is
-   * located in the workspace in the state directory of the plugin.
+   * Returns the file containing the headers definitions. This file is located in
+   * the workspace in the state directory of the plugin.
    * 
    * @return
    * @throws IOException
    */
   private static File getHeaderFile() throws IOException {
-    if ( headersFile == null ) {
-      headersFile = Activator.getDefault()
-                             .getStateLocation()
-                             .append(HEADERS_FILENAME)
-                             .toFile();
+    if (headersFile == null) {
+      headersFile = Activator.getDefault().getStateLocation().append(HEADERS_FILENAME).toFile();
     }
     return headersFile;
   }
@@ -485,19 +481,18 @@ public class CopyrightManager {
   /**
    * Returns the HeaderFormat for a given file, based on wizard settings and
    * content type of the file. If the OVERRIDE_ALL parameter is setted in the
-   * settings, the format is searched in the copyright properties of the
-   * project containing the file, else or if not found, it is searched in
-   * the general copyright preferences.
+   * settings, the format is searched in the copyright properties of the project
+   * containing the file, else or if not found, it is searched in the general
+   * copyright preferences.
    * 
    * @param settings Wizard settings
-   * @param file File to search format for
-   * @param ct Content type of the file
+   * @param file     File to search format for
+   * @param ct       Content type of the file
    * @return The appropriated header format for the file.
    */
   private static HeaderFormat getHeaderFormat(CopyrightSettings settings, IFile file, IContentType ct) {
-    return (settings.getOverride() != CopyrightSettings.OVERRIDE_ALL)
-    		? getHeaderFormat(file.getProject(), ct)
-    				: getHeaderFormat(ct);
+    return (settings.getOverride() != CopyrightSettings.OVERRIDE_ALL) ? getHeaderFormat(file.getProject(), ct)
+        : getHeaderFormat(ct);
   }
 
   /**
@@ -507,15 +502,15 @@ public class CopyrightManager {
    * @return
    */
   public static HeaderFormat getHeaderFormat(IContentType contentType) {
-    if ( headerFormats == null ) {
+    if (headerFormats == null) {
       loadHeadersFormats();
     }
     HeaderFormat format = headerFormats.get(contentType.getId());
-    if ( format == null ) {
+    if (format == null) {
       IContentType parent = contentType.getBaseType();
-      while ( parent != null ) {
+      while (parent != null) {
         format = headerFormats.get(parent.getId());
-        if ( format != null ) {
+        if (format != null) {
           headerFormats.put(contentType.getId(), format);
           break;
         }
@@ -526,25 +521,25 @@ public class CopyrightManager {
   }
 
   /**
-   * Returns the header format defined on a project for a given content type.
-   * If no header format can be found on the project, then the format defined
-   * at the workspace level is returned.
+   * Returns the header format defined on a project for a given content type. If
+   * no header format can be found on the project, then the format defined at the
+   * workspace level is returned.
    * 
-   * @param project project
+   * @param project     project
    * @param contentType content type
    * @return format for the content type
    */
   private static HeaderFormat getHeaderFormat(IProject project, IContentType contentType) {
     ProjectPreferences preferences = getProjectPreferences(project);
     HeaderFormat format = null;
-    if ( preferences != ProjectPreferences.NO_PREFS && preferences.getFormats() != null ) {
+    if (preferences != ProjectPreferences.NO_PREFS && preferences.getFormats() != null) {
       Map<String, HeaderFormat> projectFormats = preferences.getFormats();
       format = projectFormats.get(contentType.getId());
-      if ( format == null ) {
+      if (format == null) {
         IContentType parent = contentType.getBaseType();
-        while ( parent != null ) {
+        while (parent != null) {
           format = projectFormats.get(parent.getId());
-          if ( format != null ) {
+          if (format != null) {
             projectFormats.put(contentType.getId(), format);
             break;
           }
@@ -557,13 +552,12 @@ public class CopyrightManager {
 
   /**
    * Returns a copy of all the headers formats registered in the workspace
-   * preferences.
-   * All the formats returned are a copy (clone) of the saved ones.
+   * preferences. All the formats returned are a copy (clone) of the saved ones.
    * 
    * @return A copy of the current list of formats.
    */
   public static Collection<HeaderFormat> getHeadersFormats() {
-    if ( headerFormats == null ) {
+    if (headerFormats == null) {
       loadHeadersFormats();
     }
     List<HeaderFormat> formats = new ArrayList<HeaderFormat>(headerFormats.size());
@@ -581,9 +575,9 @@ public class CopyrightManager {
    */
   public static ProjectPreferences getProjectPreferences(IProject project) {
     ProjectPreferences preferences = projectsPreferences.get(project.getName());
-    if ( preferences == null ) {
+    if (preferences == null) {
       File projectFile = getProjectPreferencesFile(project);
-      if ( projectFile.exists() ) {
+      if (projectFile.exists()) {
         try {
           preferences = new ProjectPreferences();
           DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -591,17 +585,17 @@ public class CopyrightManager {
           Element elt = doc.getDocumentElement();
 
           Node n = elt.getElementsByTagName(TAG_OWNER).item(0);
-          if ( n != null ) {
+          if (n != null) {
             preferences.setOwner(n.getTextContent());
           }
 
           n = elt.getElementsByTagName(TAG_COPYRIGHT).item(0);
-          if ( n != null ) {
+          if (n != null) {
             preferences.setHeaderText(n.getTextContent());
           }
 
           Collection<HeaderFormat> formats = loadHeadersFormats(elt.getElementsByTagName(TAG_HEADER));
-          if ( formats != null && formats.size() > 0 ) {
+          if (formats != null && formats.size() > 0) {
             preferences.setFormats(formats);
           }
         } catch (Exception e) {
@@ -634,78 +628,77 @@ public class CopyrightManager {
    * @throws IOException
    */
   private static File getRepositoryFile() throws IOException {
-    return Activator.getDefault()
-                    .getStateLocation()
-                    .append(REPOSITORY_FILENAME)
-                    .toFile();
+    return Activator.getDefault().getStateLocation().append(REPOSITORY_FILENAME).toFile();
   }
 
   /**
    * Checks if a given file is valid for selection to apply the copyright.
    * 
-   * @param file The file to check
+   * @param file            The file to check
    * @param includeMatchers Extensions patterns matchers array.
-   * @param forceApply <code>true</code> if existing header must be overrided.
-   * @param override flag indicating if the project copyright settings must be overrided.
+   * @param forceApply      <code>true</code> if existing header must be
+   *                        overrided.
+   * @param override        flag indicating if the project copyright settings must
+   *                        be overrided.
    * @return <code>true<code> if valid for selection, else <code>false</code>
    * @throws CopyrightException
    */
-  private static boolean isValidFile(IFile file, StringMatcher[] includeMatchers,
-			StringMatcher[] excludeMatchers, CopyrightSettings settings)
-			throws CopyrightException {
+  private static boolean isValidFile(IFile file, StringMatcher[] includeMatchers, StringMatcher[] excludeMatchers,
+      CopyrightSettings settings) throws CopyrightException {
     BufferedReader reader = null;
     try {
       // Checks if file is writable
-      if ( file.isPhantom() || file.isReadOnly() ) {
+      if (file.isPhantom() || file.isReadOnly()) {
         return false;
       }
 
       // Gets the content type of the file
       IContentType ct = getContentType(file);
-      if ( ct == null || ! ct.isKindOf(textContentType) ) {
-        return false;  // Non text files are rejected
+      if (ct == null || !ct.isKindOf(textContentType)) {
+        return false; // Non text files are rejected
       }
 
       // Filters by patterns
       boolean patternOk = false;
       for (StringMatcher incMatcher : includeMatchers) {
-        if ( incMatcher.match(file.getName()) ) {
+        if (incMatcher.match(file.getName())) {
           patternOk = true;
           break;
         }
       }
-      if ( ! patternOk ) return false;
+      if (!patternOk)
+        return false;
 
-      if ( excludeMatchers != null ) {
+      if (excludeMatchers != null) {
         for (StringMatcher excMatcher : excludeMatchers) {
-          if ( excMatcher.match(file.getName()) ) {
+          if (excMatcher.match(file.getName())) {
             return false;
           }
         }
       }
 
       // Checks if the file already have a header
-      if ( ! settings.isForceApply() ) {
+      if (!settings.isForceApply()) {
         HeaderFormat format = getHeaderFormat(settings, file, ct);
-        if ( format == null ) {
+        if (format == null) {
           // No format defined for this content type or its parents
           return false;
-        } else if ( format.isExcluded() ) {
+        } else if (format.isExcluded()) {
           // Content type excluded from copyright
           return false;
         }
         reader = new BufferedReader(new InputStreamReader(file.getContents()));
         String line = reader.readLine();
-        if ( line != null && format.skipFirstLine(line) ) {
-          line = reader.readLine();   // Read the 2d line if first line must be preserved
+        if (line != null && format.skipFirstLine(line)) {
+          line = reader.readLine(); // Read the 2d line if first line must be preserved
         }
-        if ( line == null ) {
-          return false;  // Empty file
+        if (line == null) {
+          return false; // Empty file
         }
 //        if ( line.startsWith(format.beginLine.substring(0, Math.min(format.beginLine.length(), 5))) ) {
-        if ( line.trim().length() > 0
-             && format.beginLine.startsWith(line.substring(0, Math.min(line.length(), 5)).trim()) ) {
-          return false;  // The file already contains a header
+        if (line.trim().length() > 0
+            && format.beginLine.startsWith(line.substring(0, Math.min(line.length(), 5)).trim())) {
+          return false; // The file already contains a header
         }
       }
     } catch (CoreException e) {
@@ -713,19 +706,22 @@ public class CopyrightManager {
     } catch (IOException e) {
       throw new CopyrightException(NLS.bind(Messages.CopyrightManager_err_validation, file.getName()), e);
     } finally {
-      if ( reader != null ) {
-        try { reader.close(); } catch (Exception e) {}
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (Exception e) {
+        }
       }
     }
     return true;
   }
 
   /**
-   * Returns list of copyrights read from the XML store file, if it is present
-   * in the workspace. If no store file can be found, an empty list is returned.
+   * Returns list of copyrights read from the XML store file, if it is present in
+   * the workspace. If no store file can be found, an empty list is returned.
    * 
-   * If the custom parameter is set to true, a CUSTOM copyright entry is added
-   * at the beginning of the returned list.
+   * If the custom parameter is set to true, a CUSTOM copyright entry is added at
+   * the beginning of the returned list.
    * 
    * @param custom true to add CUSTOM copyright in the returned list.
    * @return List of copyrights (can be empty).
@@ -734,12 +730,12 @@ public class CopyrightManager {
     try {
       List<Copyright> copyrights;
       File xmlFile = getRepositoryFile();
-      if ( xmlFile.exists() ) {
+      if (xmlFile.exists()) {
         copyrights = readCopyrights(new FileInputStream(xmlFile));
       } else {
         copyrights = getDefaultCopyrights();
       }
-      if ( custom ) {
+      if (custom) {
         copyrights.add(0, CUSTOM);
       }
       return copyrights;
@@ -750,18 +746,18 @@ public class CopyrightManager {
   }
 
   /**
-   * Loads in cache the headers formats definitions stored in the headers
-   * file of the workspace.
+   * Loads in cache the headers formats definitions stored in the headers file of
+   * the workspace.
    */
   private static void loadHeadersFormats() {
     headerFormats = new HashMap<String, HeaderFormat>();
     try {
       File xmlFile = getHeaderFile();
-      if ( xmlFile.exists() ) {
+      if (xmlFile.exists()) {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = builder.parse(xmlFile);
-        Collection<HeaderFormat> formats = loadHeadersFormats(doc.getDocumentElement()
-                                                                 .getElementsByTagName(TAG_HEADER));
+        Collection<HeaderFormat> formats = loadHeadersFormats(
+            doc.getDocumentElement().getElementsByTagName(TAG_HEADER));
         for (HeaderFormat format : formats) {
           headerFormats.put(format.getContentId(), format);
         }
@@ -792,7 +788,7 @@ public class CopyrightManager {
       Element elt = (Element) nodes.item(i);
       HeaderFormat format = new HeaderFormat(elt.getAttribute(ATT_CONTENTID));
       String excluded = elt.getAttribute(ATT_EXCLUDED);
-      if ( "true".equalsIgnoreCase(excluded) ) { //$NON-NLS-1$
+      if ("true".equalsIgnoreCase(excluded)) { //$NON-NLS-1$
         format.setExcluded(true);
       } else {
         String pbl = elt.getAttribute(ATT_POSTBLANKLINES);
@@ -806,7 +802,7 @@ public class CopyrightManager {
         n = elt.getElementsByTagName(TAG_END).item(0);
         format.setEndLine(getCdataTextContent(n, false));
         NodeList nl = elt.getElementsByTagName(TAG_FIRSTLINEPATTERN);
-        if ( nl != null && nl.getLength() > 0 ) {
+        if (nl != null && nl.getLength() > 0) {
           n = nl.item(0);
           format.setFirstLinePattern(getCdataTextContent(n, false));
         }
@@ -846,9 +842,9 @@ public class CopyrightManager {
   }
 
   /**
-   * Saves a collection of copyright definitions in the workspace preferences.
-   * The definitions are stored in the repository file. All definitions
-   * present in the repository are replaced.
+   * Saves a collection of copyright definitions in the workspace preferences. The
+   * definitions are stored in the repository file. All definitions present in the
+   * repository are replaced.
    * 
    * @param copyrights
    * @throws CopyrightException
@@ -856,12 +852,12 @@ public class CopyrightManager {
   public static void saveCopyrights(Collection<Copyright> copyrights) throws CopyrightException {
     // Verification of the copyrights
     for (Copyright cp : copyrights) {
-      if ( cp.getHeaderText().length() == 0 ) {
+      if (cp.getHeaderText().length() == 0) {
         throw new CopyrightException(NLS.bind(Messages.CopyrightManager_err_savingHeaderTextMissing, cp.getLabel()));
       }
-      if ( cp.getLicenseText().length() != 0 && cp.getLicenseFilename().length() == 0 ) {
+      if (cp.getLicenseText().length() != 0 && cp.getLicenseFilename().length() == 0) {
         throw new CopyrightException(NLS.bind(Messages.CopyrightManager_err_savingFileNameMissing, cp.getLabel()));
-      } else if ( cp.getLicenseText().length() == 0 && cp.getLicenseFilename().length() != 0 ) {
+      } else if (cp.getLicenseText().length() == 0 && cp.getLicenseFilename().length() != 0) {
         throw new CopyrightException(NLS.bind(Messages.CopyrightManager_err_savingLicenseTextMissing, cp.getLabel()));
       }
     }
@@ -869,7 +865,7 @@ public class CopyrightManager {
     // Save of the copyrights in the XML store file
     try {
       File xmlFile = getRepositoryFile();
-      if ( ! xmlFile.exists() ) {
+      if (!xmlFile.exists()) {
         xmlFile.getParentFile().mkdirs();
       }
 
@@ -877,13 +873,11 @@ public class CopyrightManager {
       writer.println("<?xml version=\"1.0\" encoding=\"" + XML_ENCODING + "\" ?>");
       writer.println('<' + TAG_CROOT + '>');
       for (Copyright cp : copyrights) {
-        writer.println("\t<" + TAG_COPYRIGHT + " " + ATT_LABEL + "=\""
-        		+ cp.getLabel() + "\">");
-        writer.println("\t\t<" + TAG_HEADER + "><![CDATA["
-        		+ stripNonValidXMLCharacters(cp.getHeaderText())+ "]]></" + TAG_HEADER + '>');
-        writer.println("\t\t<" + TAG_LICENSE + " " + ATT_FILENAME + "=\""
-        		+ cp.getLicenseFilename() + "\"><![CDATA["
-        		+ stripNonValidXMLCharacters(cp.getLicenseText()) + "]]></" + TAG_LICENSE + '>');
+        writer.println("\t<" + TAG_COPYRIGHT + " " + ATT_LABEL + "=\"" + cp.getLabel() + "\">");
+        writer.println("\t\t<" + TAG_HEADER + "><![CDATA[" + stripNonValidXMLCharacters(cp.getHeaderText()) + "]]></"
+            + TAG_HEADER + '>');
+        writer.println("\t\t<" + TAG_LICENSE + " " + ATT_FILENAME + "=\"" + cp.getLicenseFilename() + "\"><![CDATA["
+            + stripNonValidXMLCharacters(cp.getLicenseText()) + "]]></" + TAG_LICENSE + '>');
         writer.println("\t</" + TAG_COPYRIGHT + '>');
       }
       writer.println("</" + TAG_CROOT + '>');
@@ -895,8 +889,7 @@ public class CopyrightManager {
   }
 
   /**
-   * Saves a collection of header format definitions in the workspace
-   * preferences.
+   * Saves a collection of header format definitions in the workspace preferences.
    * Headers definitions are stored in the file headers.xml, placed in the
    * workspace .metadata directory.
    * 
@@ -908,25 +901,20 @@ public class CopyrightManager {
       writer.println("<?xml version=\"1.0\" encoding=\"" + XML_ENCODING + "\" ?>");
       writer.println('<' + TAG_HROOT + '>');
       for (HeaderFormat format : formats) {
-        if ( format.isExcluded() ) {
-        writer.println("\t<" + TAG_HEADER
-        		+ " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" "
-        		+ ATT_EXCLUDED + "=\"true\" />");
+        if (format.isExcluded()) {
+          writer.println("\t<" + TAG_HEADER + " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" " + ATT_EXCLUDED
+              + "=\"true\" />");
         } else {
-          writer.println("\t<" + TAG_HEADER
-        		  + " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" "
-        		  + ATT_POSTBLANKLINES + "=\"" + format.getPostBlankLines() + "\" "
-        		  + ATT_LINEFORMAT + "=\"" + format.isLineCommentFormat() + "\" "
-        		  + ATT_PRESERVEFIRST + "=\"" + format.isPreserveFirstLine() + "\">");
-          writer.println("\t\t<" + TAG_BEGIN + "><![CDATA[" + format.getBeginLine()
-       			+ "]]></" + TAG_BEGIN + '>');
-          writer.println("\t\t<" + TAG_PREFIX + "><![CDATA[" + format.getLinePrefix()
-          		+ "]]></" + TAG_PREFIX + '>');
-          writer.println("\t\t<" + TAG_END + "><![CDATA[" + format.getEndLine()
-          		+ "]]></" + TAG_END + '>');
-          if ( format.getFirstLinePattern() != null ) {
-            writer.println("\t\t<" + TAG_FIRSTLINEPATTERN + "><![CDATA[" + format.getFirstLinePattern()
-            	+ "]]></" + TAG_FIRSTLINEPATTERN + '>');
+          writer.println(
+              "\t<" + TAG_HEADER + " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" " + ATT_POSTBLANKLINES
+                  + "=\"" + format.getPostBlankLines() + "\" " + ATT_LINEFORMAT + "=\"" + format.isLineCommentFormat()
+                  + "\" " + ATT_PRESERVEFIRST + "=\"" + format.isPreserveFirstLine() + "\">");
+          writer.println("\t\t<" + TAG_BEGIN + "><![CDATA[" + format.getBeginLine() + "]]></" + TAG_BEGIN + '>');
+          writer.println("\t\t<" + TAG_PREFIX + "><![CDATA[" + format.getLinePrefix() + "]]></" + TAG_PREFIX + '>');
+          writer.println("\t\t<" + TAG_END + "><![CDATA[" + format.getEndLine() + "]]></" + TAG_END + '>');
+          if (format.getFirstLinePattern() != null) {
+            writer.println("\t\t<" + TAG_FIRSTLINEPATTERN + "><![CDATA[" + format.getFirstLinePattern() + "]]></"
+                + TAG_FIRSTLINEPATTERN + '>');
           }
           writer.println("\t</" + TAG_HEADER + '>');
         }
@@ -934,7 +922,7 @@ public class CopyrightManager {
       writer.println("</" + TAG_HROOT + '>');
       writer.flush();
       writer.close();
-      if ( headerFormats == null ) {
+      if (headerFormats == null) {
         headerFormats = new HashMap<String, HeaderFormat>();
       } else {
         headerFormats.clear();
@@ -952,22 +940,22 @@ public class CopyrightManager {
    * preferences, the preference parameter must be null. Then if a project
    * preferences file exists, it will be deleted.
    * 
-   * @param project project
+   * @param project     project
    * @param preferences project copyright preferences, or null to disable
    * @throws IOException
    * @throws CopyrightException
    */
   public static void saveProjectPreferences(IProject project, ProjectPreferences preferences)
-  throws IOException, CopyrightException {
+      throws IOException, CopyrightException {
     File projectFile = getProjectPreferencesFile(project);
-    if ( ! preferences.isEmpty() ) {
-      if ( preferences.getHeaderText() != null || preferences.getFormats() != null ) {
-        if ( preferences.getHeaderText().length() == 0 ) {
+    if (!preferences.isEmpty()) {
+      if (preferences.getHeaderText() != null || preferences.getFormats() != null) {
+        if (preferences.getHeaderText().length() == 0) {
           throw new CopyrightException(Messages.CopyrightManager_err_savingHeaderTextMissingForProject);
         }
       }
 
-      if ( ! projectFile.exists() ) {
+      if (!projectFile.exists()) {
         projectFile.getParentFile().mkdirs();
       }
 
@@ -975,35 +963,30 @@ public class CopyrightManager {
       writer.println("<?xml version=\"1.0\" encoding=\"" + XML_ENCODING + "\" ?>");
       writer.println('<' + TAG_PROOT + '>');
       // Owner tag
-      writer.println("\t<" + TAG_OWNER + ">" + stripNonValidXMLCharacters(preferences.getOwner())
-					 + "</" + TAG_OWNER + '>');
+      writer.println(
+          "\t<" + TAG_OWNER + ">" + stripNonValidXMLCharacters(preferences.getOwner()) + "</" + TAG_OWNER + '>');
       // Copyright text tag
-      if ( preferences.getHeaderText() != null ) {
+      if (preferences.getHeaderText() != null) {
         writer.println("\t<" + TAG_COPYRIGHT + "><![CDATA[" + stripNonValidXMLCharacters(preferences.getHeaderText())
-						 + "]]></" + TAG_COPYRIGHT + '>');
+            + "]]></" + TAG_COPYRIGHT + '>');
       }
       // Formats for the different content types
-      if ( preferences.getFormats() != null ) {
+      if (preferences.getFormats() != null) {
         for (HeaderFormat format : preferences.getFormats().values()) {
-          if ( format.isExcluded() ) {
-            writer.println("\t<" + TAG_HEADER
-            		+ " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" "
-            		+ ATT_EXCLUDED + "=\"true\" />");
+          if (format.isExcluded()) {
+            writer.println("\t<" + TAG_HEADER + " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" "
+                + ATT_EXCLUDED + "=\"true\" />");
           } else {
-            writer.println("\t<" + TAG_HEADER
-            		+ " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" "
-            		+ ATT_POSTBLANKLINES + "=\"" + format.getPostBlankLines() + "\" "
-            		+ ATT_LINEFORMAT + "=\"" + format.isLineCommentFormat() + "\" "
-            		+ ATT_PRESERVEFIRST + "=\"" + format.isPreserveFirstLine() + "\">");
-            writer.println("\t\t<" + TAG_BEGIN + "><![CDATA[" + format.getBeginLine()
-            		+ "]]></" + TAG_BEGIN + '>');
-            writer.println("\t\t<" + TAG_PREFIX + "><![CDATA[" + format.getLinePrefix()
-            		+ "]]></" + TAG_PREFIX + '>');
-            writer.println("\t\t<" + TAG_END + "><![CDATA[" + format.getEndLine()
-            		+ "]]></" + TAG_END + '>');
-            if ( format.getFirstLinePattern() != null ) {
-              writer.println("\t\t<" + TAG_FIRSTLINEPATTERN + "><![CDATA[" + format.getFirstLinePattern()
-              		+ "]]></" + TAG_FIRSTLINEPATTERN + '>');
+            writer.println(
+                "\t<" + TAG_HEADER + " " + ATT_CONTENTID + "=\"" + format.getContentId() + "\" " + ATT_POSTBLANKLINES
+                    + "=\"" + format.getPostBlankLines() + "\" " + ATT_LINEFORMAT + "=\"" + format.isLineCommentFormat()
+                    + "\" " + ATT_PRESERVEFIRST + "=\"" + format.isPreserveFirstLine() + "\">");
+            writer.println("\t\t<" + TAG_BEGIN + "><![CDATA[" + format.getBeginLine() + "]]></" + TAG_BEGIN + '>');
+            writer.println("\t\t<" + TAG_PREFIX + "><![CDATA[" + format.getLinePrefix() + "]]></" + TAG_PREFIX + '>');
+            writer.println("\t\t<" + TAG_END + "><![CDATA[" + format.getEndLine() + "]]></" + TAG_END + '>');
+            if (format.getFirstLinePattern() != null) {
+              writer.println("\t\t<" + TAG_FIRSTLINEPATTERN + "><![CDATA[" + format.getFirstLinePattern() + "]]></"
+                  + TAG_FIRSTLINEPATTERN + '>');
             }
             writer.println("\t</" + TAG_HEADER + '>');
           }
@@ -1012,7 +995,7 @@ public class CopyrightManager {
       writer.println("</" + TAG_PROOT + '>');
       writer.flush();
       writer.close();
-    } else if ( projectFile.exists() ) {
+    } else if (projectFile.exists()) {
       projectFile.delete();
     }
     projectsPreferences.remove(project.getName());
@@ -1022,14 +1005,14 @@ public class CopyrightManager {
    * Returns a selection of resources (IFolder and IFile) based on the given
    * copyright settings.
    * 
-   * @param settings Copyright settings
+   * @param settings     Copyright settings
    * @param preselection Preselected list of files
-   * @param monitor Eclipse monitor
+   * @param monitor      Eclipse monitor
    * @return Array of selection items
    * @throws CopyrightException
    */
-  public static CopyrightSelectionItem[] selectResources(CopyrightSettings settings,
-		  List<IFile> preselection, IProgressMonitor monitor) throws CopyrightException {
+  public static CopyrightSelectionItem[] selectResources(CopyrightSettings settings, List<IFile> preselection,
+      IProgressMonitor monitor) throws CopyrightException {
     String[] includePatterns = settings.getIncludePattern().split(","); //$NON-NLS-1$
     StringMatcher[] includeMatchers = new StringMatcher[includePatterns.length];
     for (int i = 0; i < includePatterns.length; i++) {
@@ -1038,7 +1021,7 @@ public class CopyrightManager {
 
     StringMatcher[] excludeMatchers = null;
     String patterns = settings.getExcludePattern();
-    if ( patterns != null ) {
+    if (patterns != null) {
       String[] excludePatterns = patterns.split(","); //$NON-NLS-1$
       excludeMatchers = new StringMatcher[excludePatterns.length];
       for (int i = 0; i < excludePatterns.length; i++) {
@@ -1046,12 +1029,13 @@ public class CopyrightManager {
       }
     }
 
-    List<CopyrightSelectionItem> projectsSelection = new ArrayList<CopyrightSelectionItem>(settings.getProjects().length);
+    List<CopyrightSelectionItem> projectsSelection = new ArrayList<CopyrightSelectionItem>(
+        settings.getProjects().length);
     for (IProject project : settings.getProjects()) {
       try {
-        CopyrightSelectionItem[] selection = selectResources(project, includeMatchers,
-        		excludeMatchers, settings, preselection, monitor);
-        if ( selection.length > 0 ) {
+        CopyrightSelectionItem[] selection = selectResources(project, includeMatchers, excludeMatchers, settings,
+            preselection, monitor);
+        if (selection.length > 0) {
           projectsSelection.add(new CopyrightSelectionItem(project, selection));
         }
       } catch (CoreException e) {
@@ -1061,23 +1045,22 @@ public class CopyrightManager {
     return projectsSelection.toArray(new CopyrightSelectionItem[] {});
   }
 
-  private static CopyrightSelectionItem[] selectResources(IContainer parent,
-      StringMatcher[] includeMatchers, StringMatcher[] excludeMatchers,
-      CopyrightSettings settings, List<IFile> preselection, IProgressMonitor monitor)
-    		  throws CoreException, CopyrightException {
+  private static CopyrightSelectionItem[] selectResources(IContainer parent, StringMatcher[] includeMatchers,
+      StringMatcher[] excludeMatchers, CopyrightSettings settings, List<IFile> preselection, IProgressMonitor monitor)
+      throws CoreException, CopyrightException {
     List<CopyrightSelectionItem> membersSelection = new ArrayList<CopyrightSelectionItem>();
     IResource[] members = parent.members();
     for (IResource member : members) {
       monitor.subTask(parent.getName() + " - " + member.getFullPath().toPortableString()); //$NON-NLS-1$
-      if ( member.getName().startsWith(".") ) continue; //$NON-NLS-1$
-      if ( member instanceof IFile
-    		  && isValidFile((IFile) member, includeMatchers, excludeMatchers, settings)
-    		  && (preselection == null || preselection.contains(member)) ) {
+      if (member.getName().startsWith(".")) //$NON-NLS-1$
+        continue;
+      if (member instanceof IFile && isValidFile((IFile) member, includeMatchers, excludeMatchers, settings)
+          && (preselection == null || preselection.contains(member))) {
         membersSelection.add(new CopyrightSelectionItem(member, null));
-      } else if ( member instanceof IContainer ) {
-        CopyrightSelectionItem[] selection = selectResources((IContainer) member,
-        		includeMatchers, excludeMatchers, settings, preselection, monitor);
-        if ( selection.length > 0 ) {
+      } else if (member instanceof IContainer) {
+        CopyrightSelectionItem[] selection = selectResources((IContainer) member, includeMatchers, excludeMatchers,
+            settings, preselection, monitor);
+        if (selection.length > 0) {
           membersSelection.add(new CopyrightSelectionItem(member, selection));
         }
       }
@@ -1087,11 +1070,10 @@ public class CopyrightManager {
 
   /**
    * This method ensures that the output String has only valid XML unicode
-   * characters as specified by the XML 1.0 standard. For reference, please
-   * see
+   * characters as specified by the XML 1.0 standard. For reference, please see
    * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
-   * standard</a>. This method will return an empty String if the input is
-   * null or empty.
+   * standard</a>. This method will return an empty String if the input is null or
+   * empty.
    *
    * @param in The String whose non-valid characters we want to remove.
    * @return The in String, stripped of non-valid characters.
@@ -1100,15 +1082,12 @@ public class CopyrightManager {
     StringBuffer out = new StringBuffer(); // Used to hold the output.
     char current; // Used to reference the current character.
 
-    if ( in == null || ("".equals(in)) ) return "";
+    if (in == null || ("".equals(in)))
+      return "";
     for (int i = 0; i < in.length(); i++) {
       current = in.charAt(i);
-      if ( (current == 0x9) ||
-    		  (current == 0xA) ||
-    		  (current == 0xD) ||
-    		  ((current >= 0x20) && (current <= 0xD7FF)) ||
-    		  ((current >= 0xE000) && (current <= 0xFFFD)) ||
-    		  ((current >= 0x10000) && (current <= 0x10FFFF)) ) {
+      if ((current == 0x9) || (current == 0xA) || (current == 0xD) || ((current >= 0x20) && (current <= 0xD7FF))
+          || ((current >= 0xE000) && (current <= 0xFFFD)) || ((current >= 0x10000) && (current <= 0x10FFFF))) {
         out.append(current);
       }
     }
@@ -1118,18 +1097,19 @@ public class CopyrightManager {
   /**
    * Makes the variables substitution in a given string.
    * 
-   * @param line the string to operate on
+   * @param line       the string to operate on
    * @param parameters map of variables definitions
    * @return the result string
    */
   private static String substitute(String line, Map<String, String> parameters) {
-    if ( line == null ) return null;
+    if (line == null)
+      return null;
 
     StringBuilder buffer = new StringBuilder(line);
     int i = 0, j;
     while ((i = buffer.indexOf("${", i)) >= 0) { //$NON-NLS-1$
       j = buffer.indexOf("}", i + 2); //$NON-NLS-1$
-      if ( j > 0 ) {
+      if (j > 0) {
         String key = buffer.substring(i + 2, j);
         String value = parameters.get(key);
         buffer.replace(i++, j + 1, value != null ? value.toString() : Constants.EMPTY_STRING);
@@ -1143,7 +1123,7 @@ public class CopyrightManager {
    * copyright.
    * 
    * @param licenseFile the license file to create
-   * @param copyright the copyright containing the license text
+   * @param copyright   the copyright containing the license text
    * @throws IOException
    */
   private static void writeLicense(File licenseFile, Copyright copyright) throws IOException {
@@ -1153,7 +1133,7 @@ public class CopyrightManager {
       writer = new PrintWriter(licenseFile);
       writer.write(copyright.licenseText);
     } finally {
-      if ( writer != null ) {
+      if (writer != null) {
         writer.close();
       }
     }

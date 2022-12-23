@@ -90,8 +90,7 @@ public class CopyrightSettingsPage extends WizardPage {
     data.horizontalSpan = 2;
     l2.setLayoutData(data);
     l2.setFont(font);
-    headerText = new Text(top, SWT.BORDER | SWT.MULTI | SWT.WRAP
-                          | SWT.H_SCROLL | SWT.V_SCROLL);
+    headerText = new Text(top, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL);
     data = new GridData(GridData.FILL_BOTH);
     data.horizontalSpan = 2;
     data.heightHint = (fontData.length > 0 ? fontData[0].getHeight() : 10) * LINES_NUMBER;
@@ -152,14 +151,14 @@ public class CopyrightSettingsPage extends WizardPage {
   private void createListeners() {
     copyrightType.addSelectionChangedListener(new ISelectionChangedListener() {
       public void selectionChanged(SelectionChangedEvent event) {
-        if ( selectedCopyright != null ) {
+        if (selectedCopyright != null) {
           selectedCopyright.setHeaderText(headerText.getText());
         }
         selectedCopyright = (Copyright) ((StructuredSelection) event.getSelection()).getFirstElement();
         settings.setCopyright(selectedCopyright);
         String header = selectedCopyright.getHeaderText();
         headerText.setText(header != null ? header : Constants.EMPTY_STRING);
-        if ( selectedCopyright.getLicenseFilename().length() > 0 ) {
+        if (selectedCopyright.getLicenseFilename().length() > 0) {
           addLicenseFile.setEnabled(true);
           licenseFile.setEnabled(addLicenseFile.getSelection());
           licenseFile.setText(selectedCopyright.getLicenseFilename());
@@ -169,20 +168,20 @@ public class CopyrightSettingsPage extends WizardPage {
           licenseFile.setEnabled(false);
           licenseFile.setText(Constants.EMPTY_STRING);
         }
-        settings.setLicenseFile(addLicenseFile.getSelection()
-                                ? licenseFile.getText()
-                                : null);
+        settings.setLicenseFile(addLicenseFile.getSelection() ? licenseFile.getText() : null);
       }
     });
     forceApply.addSelectionListener(new SelectionListener() {
-      public void widgetDefaultSelected(SelectionEvent e) {}
+      public void widgetDefaultSelected(SelectionEvent e) {
+      }
 
       public void widgetSelected(SelectionEvent e) {
         settings.setForceApply(forceApply.getSelection());
       }
     });
     addLicenseFile.addSelectionListener(new SelectionListener() {
-      public void widgetDefaultSelected(SelectionEvent e) {}
+      public void widgetDefaultSelected(SelectionEvent e) {
+      }
 
       public void widgetSelected(SelectionEvent e) {
         boolean selected = addLicenseFile.getSelection();
@@ -207,18 +206,18 @@ public class CopyrightSettingsPage extends WizardPage {
   }
 
   protected void validatePage(Widget widget) {
-    if ( widget == headerText ) {
+    if (widget == headerText) {
       String header = headerText.getText().trim();
       setPageComplete(header.length() > 0);
       Copyright cp = settings.getCopyright();
-      if ( cp != null ) {
+      if (cp != null) {
         cp.setHeaderText(header);
       }
-    } else if ( widget == includePattern ) {
+    } else if (widget == includePattern) {
       settings.setIncludePattern(includePattern.getText().trim());
-    } else if ( widget == excludePattern ) {
+    } else if (widget == excludePattern) {
       settings.setExcludePattern(excludePattern.getText().trim());
-    } else if ( widget == licenseFile ) {
+    } else if (widget == licenseFile) {
       settings.setLicenseFile(licenseFile.getText().trim());
     }
   }

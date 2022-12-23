@@ -28,15 +28,14 @@ public class ContentTypesContentProvider implements ITreeContentProvider {
   }
 
   public static boolean equals(Object left, Object right) {
-    return left == null
-           ? right == null
-           : ((right != null) && left.equals(right));
+    return left == null ? right == null : ((right != null) && left.equals(right));
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
+   * @see
+   * org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
    */
   public Object[] getChildren(Object parentElement) {
     List<IContentType> elements = new ArrayList<IContentType>();
@@ -44,8 +43,7 @@ public class ContentTypesContentProvider implements ITreeContentProvider {
     IContentType[] contentTypes = manager.getAllContentTypes();
     for (int i = 0; i < contentTypes.length; i++) {
       IContentType type = contentTypes[i];
-      if ( equals(type.getBaseType(), baseType)
-          && (! textOnly || type.isKindOf(textContentType)) ) {
+      if (equals(type.getBaseType(), baseType) && (!textOnly || type.isKindOf(textContentType))) {
         elements.add(type);
       }
     }
@@ -55,7 +53,8 @@ public class ContentTypesContentProvider implements ITreeContentProvider {
   /*
    * (non-Javadoc)
    * 
-   * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
+   * @see
+   * org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
    */
   public Object getParent(Object element) {
     IContentType contentType = (IContentType) element;
@@ -65,7 +64,8 @@ public class ContentTypesContentProvider implements ITreeContentProvider {
   /*
    * (non-Javadoc)
    * 
-   * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
+   * @see
+   * org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
    */
   public boolean hasChildren(Object element) {
     return getChildren(element).length > 0;
@@ -74,7 +74,9 @@ public class ContentTypesContentProvider implements ITreeContentProvider {
   /*
    * (non-Javadoc)
    * 
-   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+   * @see
+   * org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.
+   * Object)
    */
   public Object[] getElements(Object inputElement) {
     return getChildren(null);
@@ -85,17 +87,19 @@ public class ContentTypesContentProvider implements ITreeContentProvider {
    * 
    * @see org.eclipse.jface.viewers.IContentProvider#dispose()
    */
-  public void dispose() {}
+  public void dispose() {
+  }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
-   *      java.lang.Object, java.lang.Object)
+   * @see
+   * org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.
+   * viewers.Viewer, java.lang.Object, java.lang.Object)
    */
   public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
     manager = (IContentTypeManager) newInput;
-    if ( manager != null ) {
+    if (manager != null) {
       textContentType = manager.getContentType(IContentTypeManager.CT_TEXT);
     }
   }

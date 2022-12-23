@@ -22,8 +22,7 @@ public class CheckboxFilteredTree extends FilteredTree {
     super(parent, useNewLook);
   }
 
-  public CheckboxFilteredTree(Composite parent, int treeStyle,
-		  PatternFilter filter, boolean useNewLook) {
+  public CheckboxFilteredTree(Composite parent, int treeStyle, PatternFilter filter, boolean useNewLook) {
     super(parent, treeStyle, filter, useNewLook);
   }
 

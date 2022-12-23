@@ -45,51 +45,43 @@ public class HeaderFormat {
   protected Pattern pattern = null;
 
   static {
-    CSOURCE_HEADER = new HeaderFormat(
-		CT_CSOURCE, false,
+    CSOURCE_HEADER = new HeaderFormat(CT_CSOURCE, false,
         "/*******************************************************************************", //$NON-NLS-1$
         " * ", //$NON-NLS-1$
         " ******************************************************************************/", //$NON-NLS-1$
         0, false, false, null);
 
-    CHEADER_HEADER = new HeaderFormat(
-		CT_CHEADER, false,
+    CHEADER_HEADER = new HeaderFormat(CT_CHEADER, false,
         "/*******************************************************************************", //$NON-NLS-1$
         " * ", //$NON-NLS-1$
         " ******************************************************************************/", //$NON-NLS-1$
         0, false, false, null);
 
-    CXXSOURCE_HEADER = new HeaderFormat(
-		CT_CXXSOURCE, false,
+    CXXSOURCE_HEADER = new HeaderFormat(CT_CXXSOURCE, false,
         "////////////////////////////////////////////////////////////////////////////////", //$NON-NLS-1$
         "// ", //$NON-NLS-1$
         "////////////////////////////////////////////////////////////////////////////////", //$NON-NLS-1$
         0, true, false, null);
 
-    CXXHEADER_HEADER = new HeaderFormat(
-		CT_CXXHEADER, false,
+    CXXHEADER_HEADER = new HeaderFormat(CT_CXXHEADER, false,
         "////////////////////////////////////////////////////////////////////////////////", //$NON-NLS-1$
         "// ", //$NON-NLS-1$
         "////////////////////////////////////////////////////////////////////////////////", //$NON-NLS-1$
         0, true, false, null);
 
-    JAVA_HEADER = new HeaderFormat(
-        CT_JAVA, false,
+    JAVA_HEADER = new HeaderFormat(CT_JAVA, false,
         "/*******************************************************************************", //$NON-NLS-1$
         " * ", //$NON-NLS-1$
         " ******************************************************************************/", //$NON-NLS-1$
         0, false, false, null);
 
-    TEXT_HEADER = new HeaderFormat(
-        IContentTypeManager.CT_TEXT, false,
+    TEXT_HEADER = new HeaderFormat(IContentTypeManager.CT_TEXT, false,
         "#-------------------------------------------------------------------------------", //$NON-NLS-1$
         "# ", //$NON-NLS-1$
         "#-------------------------------------------------------------------------------", //$NON-NLS-1$
         0, true, false, null);
 
-    XML_HEADER = new HeaderFormat(
-        CT_XML, false,
-        "<!--", //$NON-NLS-1$
+    XML_HEADER = new HeaderFormat(CT_XML, false, "<!--", //$NON-NLS-1$
         "  ", //$NON-NLS-1$
         "-->", //$NON-NLS-1$
         0, false, true, "<\\?xml version=.*\\?>"); //$NON-NLS-1$
@@ -99,10 +91,8 @@ public class HeaderFormat {
     this.contentId = contentId;
   }
 
-  private HeaderFormat(String contentId, boolean excluded, String beginLine,
-		  String linePrefix, String endLine, int postBlankLines,
-		  boolean lineCommentFormat, boolean preserveFirstLine,
-		  String firstLinePattern) {
+  private HeaderFormat(String contentId, boolean excluded, String beginLine, String linePrefix, String endLine,
+      int postBlankLines, boolean lineCommentFormat, boolean preserveFirstLine, String firstLinePattern) {
     this.contentId = contentId;
     this.excluded = excluded;
     this.beginLine = beginLine;
@@ -116,10 +106,8 @@ public class HeaderFormat {
 
   @Override
   protected Object clone() {
-    return new HeaderFormat(this.contentId, this.excluded, this.beginLine,
-    		this.linePrefix, this.endLine, this.postBlankLines,
-    		this.lineCommentFormat, this.preserveFirstLine,
-    		this.firstLinePattern);
+    return new HeaderFormat(this.contentId, this.excluded, this.beginLine, this.linePrefix, this.endLine,
+        this.postBlankLines, this.lineCommentFormat, this.preserveFirstLine, this.firstLinePattern);
   }
 
   static HeaderFormat createExcluded(String contentId) {
@@ -130,9 +118,7 @@ public class HeaderFormat {
 
   @Override
   public boolean equals(Object obj) {
-    return (obj instanceof HeaderFormat)
-    		? ((HeaderFormat) obj).getContentId().equals(this.contentId)
-    				: false;
+    return (obj instanceof HeaderFormat) ? ((HeaderFormat) obj).getContentId().equals(this.contentId) : false;
   }
 
   public boolean isExcluded() {
@@ -206,9 +192,9 @@ public class HeaderFormat {
   }
 
   public boolean skipFirstLine(String line) {
-    if ( preserveFirstLine ) {
-      if ( firstLinePattern != null ) {
-        if ( pattern == null ) {
+    if (preserveFirstLine) {
+      if (firstLinePattern != null) {
+        if (pattern == null) {
           pattern = Pattern.compile(firstLinePattern);
         }
         return pattern.matcher(line).matches();

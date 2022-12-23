@@ -19,10 +19,10 @@ public class CopyrightSelectionItem {
   protected int selected = 0;
 
   public CopyrightSelectionItem(IResource resource, CopyrightSelectionItem[] children) {
-    this.resource  = resource;
+    this.resource = resource;
     this.children = children;
     this.selected = 2;
-    if ( children != null ) {
+    if (children != null) {
       for (CopyrightSelectionItem child : children) {
         child.parent = this;
       }

@@ -50,9 +50,8 @@ import com.wdev91.eclipse.copyright.viewers.CopyrightLabelProvider;
 import com.wdev91.eclipse.copyright.viewers.CopyrightsInput;
 import com.wdev91.eclipse.copyright.viewers.CopyrightsComparator;
 
-public class CopyrightPreferencePage extends PreferencePage
-    implements IWorkbenchPreferencePage {
-	public static final String CONTEXT_ID = Activator.PLUGIN_ID + ".prefs_copyright"; //$NON-NLS-1$
+public class CopyrightPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+  public static final String CONTEXT_ID = Activator.PLUGIN_ID + ".prefs_copyright"; //$NON-NLS-1$
   private static final int LIST_LINES_NUMBER = 10;
 
   protected Text ownerText;
@@ -78,27 +77,25 @@ public class CopyrightPreferencePage extends PreferencePage
    */
   protected void addCopyright() {
     IInputValidator validator = new IInputValidator() {
-	  public String isValid(String newText) {
+      public String isValid(String newText) {
         String label = newText.trim();
-        if ( label.length() == 0 ) {
+        if (label.length() == 0) {
           return Messages.CopyrightPreferencePage_err_noLabelProvided;
         }
-        if ( input.exists(label) ) {
+        if (input.exists(label)) {
           return Messages.CopyrightPreferencePage_err_labelAlreadyExists;
         }
         return null;
       }
     };
-    InputDialog dialog = new InputDialog(this.getShell(),
-    		Messages.CopyrightPreferencePage_inputTitle,
-    		Messages.CopyrightPreferencePage_inputLabel,
-    		null, validator);
-    if ( dialog.open() == InputDialog.OK ) {
+    InputDialog dialog = new InputDialog(this.getShell(), Messages.CopyrightPreferencePage_inputTitle,
+        Messages.CopyrightPreferencePage_inputLabel, null, validator);
+    if (dialog.open() == InputDialog.OK) {
       Copyright c = new Copyright(dialog.getValue());
       c.setHeaderText(Constants.EMPTY_STRING);
       c.setLicenseFilename(Constants.EMPTY_STRING);
       c.setLicenseText(Constants.EMPTY_STRING);
-      if ( input.addCopyright(c) ) {
+      if (input.addCopyright(c)) {
         copyrightsList.add(c);
         copyrightsList.setSelection(new StructuredSelection(c));
         tab.setSelection(0);
@@ -182,8 +179,7 @@ public class CopyrightPreferencePage extends PreferencePage
 
     TabItem headerTab = new TabItem(tab, SWT.NONE);
     headerTab.setText(Messages.CopyrightPreferencePage_labelHeader);
-    headerText = new Text(tab, SWT.BORDER | SWT.MULTI | SWT.WRAP
-                          | SWT.H_SCROLL | SWT.V_SCROLL);
+    headerText = new Text(tab, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL);
     headerTab.setControl(headerText);
 
     TabItem licenseTab = new TabItem(tab, SWT.NONE);
@@ -199,8 +195,7 @@ public class CopyrightPreferencePage extends PreferencePage
     data = new GridData(GridData.FILL_HORIZONTAL);
     data.horizontalSpan = 2;
     l4.setLayoutData(data);
-    licenseText = new Text(licenseTabContent, SWT.BORDER | SWT.MULTI | SWT.WRAP
-                           | SWT.H_SCROLL | SWT.V_SCROLL);
+    licenseText = new Text(licenseTabContent, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL);
     data = new GridData(GridData.FILL_BOTH);
     data.horizontalSpan = 2;
     licenseText.setLayoutData(data);
@@ -211,11 +206,11 @@ public class CopyrightPreferencePage extends PreferencePage
       }
 
       public void widgetSelected(SelectionEvent e) {
-        if ( e.widget == addButton ) {
+        if (e.widget == addButton) {
           addCopyright();
-        } else if ( e.widget == modifyButton ) {
+        } else if (e.widget == modifyButton) {
           updateCopyright();
-        } else if ( e.widget == deleteButton ) {
+        } else if (e.widget == deleteButton) {
           deleteCopyright();
         }
       }
@@ -235,11 +230,9 @@ public class CopyrightPreferencePage extends PreferencePage
    */
   protected void deleteCopyright() {
     Copyright c = getSelection();
-    if ( c != null
-         && MessageDialog.openQuestion(this.getShell(),
-                Messages.CopyrightPreferencePage_titleDelete,
-                NLS.bind(Messages.CopyrightPreferencePage_msgConfirmDelete, c.getLabel())) ) {
-      if ( input.deleteCopyright(c) ) {
+    if (c != null && MessageDialog.openQuestion(this.getShell(), Messages.CopyrightPreferencePage_titleDelete,
+        NLS.bind(Messages.CopyrightPreferencePage_msgConfirmDelete, c.getLabel()))) {
+      if (input.deleteCopyright(c)) {
         copyrightsList.remove(c);
         updateContent();
       }
@@ -272,7 +265,7 @@ public class CopyrightPreferencePage extends PreferencePage
     super.performDefaults();
   }
 
-	/*
+  /*
    * @see org.eclipse.jface.preference.PreferencePage#performOk()
    */
   @Override
@@ -282,9 +275,7 @@ public class CopyrightPreferencePage extends PreferencePage
     try {
       input.save();
     } catch (CopyrightException e) {
-      MessageDialog.openError(this.getShell(),
-    		  Messages.CopyrightPreferencePage_titleCopyrights,
-    		  e.getMessage());
+      MessageDialog.openError(this.getShell(), Messages.CopyrightPreferencePage_titleCopyrights, e.getMessage());
       return false;
     }
     return true;
@@ -295,13 +286,10 @@ public class CopyrightPreferencePage extends PreferencePage
    */
   protected void updateCopyright() {
     Copyright c = getSelection();
-    if ( c != null ) {
-      InputDialog dialog = new InputDialog(this.getShell(),
-    		  Messages.CopyrightPreferencePage_titleModify,
-    		  Messages.CopyrightPreferencePage_inputLabel,
-    		  c.getLabel(),
-    		  null);
-      if ( dialog.open() == InputDialog.OK ) {
+    if (c != null) {
+      InputDialog dialog = new InputDialog(this.getShell(), Messages.CopyrightPreferencePage_titleModify,
+          Messages.CopyrightPreferencePage_inputLabel, c.getLabel(), null);
+      if (dialog.open() == InputDialog.OK) {
         c.setLabel(dialog.getValue());
         copyrightsList.refresh(c);
       }
@@ -314,8 +302,8 @@ public class CopyrightPreferencePage extends PreferencePage
    */
   private void updateContent() {
     Copyright c = getSelection();
-    if ( c != null ) {
-      if ( currentSelection != null ) {
+    if (c != null) {
+      if (currentSelection != null) {
         currentSelection.setHeaderText(headerText.getText());
         currentSelection.setLicenseFilename(licenseFile.getText());
         currentSelection.setLicenseText(licenseText.getText());

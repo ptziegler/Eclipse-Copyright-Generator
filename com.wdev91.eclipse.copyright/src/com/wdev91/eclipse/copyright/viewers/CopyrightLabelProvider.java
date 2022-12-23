@@ -22,18 +22,19 @@ public class CopyrightLabelProvider implements ILabelProvider {
   }
 
   public String getText(Object element) {
-    return element instanceof Copyright
-    		? ((Copyright) element).getLabel()
-    				: element.toString();
+    return element instanceof Copyright ? ((Copyright) element).getLabel() : element.toString();
   }
 
-  public void addListener(ILabelProviderListener listener) {}
+  public void addListener(ILabelProviderListener listener) {
+  }
 
-  public void dispose() {}
+  public void dispose() {
+  }
 
   public boolean isLabelProperty(Object element, String property) {
     return false;
   }
 
-  public void removeListener(ILabelProviderListener listener) {}
+  public void removeListener(ILabelProviderListener listener) {
+  }
 }

@@ -34,7 +34,7 @@ class ProjectLabelProvider implements ILabelProvider {
 
   public String getText(Object element) {
     String text = workbenchProvider.getText(element);
-    if ( CopyrightManager.getProjectPreferences((IProject) element) != ProjectPreferences.NO_PREFS ) {
+    if (CopyrightManager.getProjectPreferences((IProject) element) != ProjectPreferences.NO_PREFS) {
       return text + COPYRIGHT_LABEL;
     } else {
       return text;

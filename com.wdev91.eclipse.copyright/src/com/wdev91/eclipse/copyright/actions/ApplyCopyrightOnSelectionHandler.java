@@ -37,24 +37,24 @@ import com.wdev91.eclipse.copyright.model.ProjectPreferences;
 import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
 
 /**
- * Apply copyright... command.
- * Allow to apply a copyright on selected resources from a popup menu. Mainly
- * concern Eclipse navigator and package explorer.
+ * Apply copyright... command. Allow to apply a copyright on selected resources
+ * from a popup menu. Mainly concern Eclipse navigator and package explorer.
  */
 public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
   public static final String COMMAND_ID = "com.wdev91.eclipse.copyright.ApplyCopyrightCommand"; //$NON-NLS-1$
 
   private void addFile(IResource res, List<IFile> resources) {
-    if ( res instanceof IFile ) {
-      if ( ! resources.contains(res) ) {
+    if (res instanceof IFile) {
+      if (!resources.contains(res)) {
         resources.add((IFile) res);
       }
-    } else if ( res instanceof IFolder ) {
+    } else if (res instanceof IFolder) {
       try {
         for (IResource member : ((IFolder) res).members(IFolder.EXCLUDE_DERIVED)) {
           addFile(member, resources);
         }
-      } catch (CoreException e) {}
+      } catch (CoreException e) {
+      }
     }
   }
 
@@ -63,47 +63,46 @@ public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
     List<IFile> resources = new ArrayList<IFile>();
     IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getActiveMenuSelection(event);
     for (Object sel : selection.toArray()) {
-      if ( sel instanceof IFile || sel instanceof IFolder ) {
+      if (sel instanceof IFile || sel instanceof IFolder) {
         addFile((IResource) sel, resources);
       } else {
         Object ao = null;
-        if ( sel instanceof IAdaptable ) {
+        if (sel instanceof IAdaptable) {
           ao = ((IAdaptable) sel).getAdapter(IFile.class);
-          if ( ao == null ) {
+          if (ao == null) {
             ao = ((IAdaptable) sel).getAdapter(IFolder.class);
           }
         }
-        if ( ao == null ) {
+        if (ao == null) {
           ao = findJavaResource(sel);
         }
-        if ( ao != null ) {
+        if (ao != null) {
           addFile((IResource) ao, resources);
         }
       }
     }
 
-    // List of projects containing the selected files, with analyze if wizard is needed
+    // List of projects containing the selected files, with analyze if wizard is
+    // needed
     List<IProject> projects = new ArrayList<IProject>();
     boolean wizard = false;
     for (IFile f : resources) {
       IProject p = f.getProject();
-      if ( ! projects.contains(p) ) {
+      if (!projects.contains(p)) {
         projects.add(p);
         ProjectPreferences prefs;
-        if ( (prefs = CopyrightManager.getProjectPreferences(p)) == null
-        		|| prefs.getHeaderText() == null )
+        if ((prefs = CopyrightManager.getProjectPreferences(p)) == null || prefs.getHeaderText() == null)
           wizard = true;
       }
     }
 
     // Apply the copyrights
     Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-    if ( wizard ) {
+    if (wizard) {
       ApplyCopyrightWizard.openWizard(shell, projects, resources);
     } else {
-      if ( MessageDialog.openConfirm(shell, Messages.ApplyCopyrightOnSelectionHandler_messageTitle,
-    		  NLS.bind(Messages.ApplyCopyrightOnSelectionHandler_confirmMessage,
-    				  resources.size())) ) {
+      if (MessageDialog.openConfirm(shell, Messages.ApplyCopyrightOnSelectionHandler_messageTitle,
+          NLS.bind(Messages.ApplyCopyrightOnSelectionHandler_confirmMessage, resources.size()))) {
         CopyrightSettings settings = new CopyrightSettings();
         settings.setFiles(resources.toArray(new IFile[] {}));
         CopyrightManager.applyCopyrightJob(settings);
@@ -114,13 +113,13 @@ public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
   }
 
   private IResource findJavaResource(Object obj) {
-    if ( ! obj.getClass().getPackage().getName().startsWith("org.eclipse.jdt") ) //$NON-NLS-1$
+    if (!obj.getClass().getPackage().getName().startsWith("org.eclipse.jdt")) //$NON-NLS-1$
       return null;
 
     try {
       Method m = obj.getClass().getMethod("getResource"); //$NON-NLS-1$
       Object res = m.invoke(obj);
-      if ( res instanceof IFile || res instanceof IFolder ) {
+      if (res instanceof IFile || res instanceof IFolder) {
         return (IResource) res;
       }
     } catch (Exception e) {

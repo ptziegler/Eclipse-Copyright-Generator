@@ -69,19 +69,20 @@ public class FormatsPanel extends Composite {
   }
 
   private void changeSelection() {
-    IContentType contentType = (IContentType) ((IStructuredSelection) contentTypesViewer.getSelection()).getFirstElement();
-    if ( contentType != null ) {
+    IContentType contentType = (IContentType) ((IStructuredSelection) contentTypesViewer.getSelection())
+        .getFirstElement();
+    if (contentType != null) {
       currentId = contentType.getId();
       HeaderFormat format = headerFormats.get(currentId);
-      if ( format != null ) {
-        if ( ! format.isExcluded() ) {
+      if (format != null) {
+        if (!format.isExcluded()) {
           firstLineText.setText(format.getBeginLine());
           linePrefixText.setText(format.getLinePrefix());
           lastLineText.setText(format.getEndLine());
           postBlankLinesText.setText(Constants.EMPTY_STRING + format.getPostBlankLines());
           lineFormatButton.setSelection(format.isLineCommentFormat());
           preserveFirstLineButton.setSelection(format.isPreserveFirstLine());
-          if ( format.getFirstLinePattern() != null ) {
+          if (format.getFirstLinePattern() != null) {
             firstLinePatternText.setText(format.getFirstLinePattern());
           } else {
             firstLinePatternText.setText(Constants.EMPTY_STRING);
@@ -115,7 +116,7 @@ public class FormatsPanel extends Composite {
     FontMetrics fontMetrics = gc.getFontMetrics();
     gc.dispose();
 
-    if ( fontMetrics == null ) {
+    if (fontMetrics == null) {
       return 0;
     }
     return Dialog.convertHorizontalDLUsToPixels(fontMetrics, dlus);
@@ -134,7 +135,7 @@ public class FormatsPanel extends Composite {
     contentTypesViewer.setContentProvider(new ContentTypesContentProvider(true));
     contentTypesViewer.setLabelProvider(new LabelProvider() {
       @Override
-			public String getText(Object element) {
+      public String getText(Object element) {
         IContentType contentType = (IContentType) element;
         return contentType.getName();
       }
@@ -222,7 +223,7 @@ public class FormatsPanel extends Composite {
     data.horizontalSpan = 4;
     data.horizontalAlignment = GridData.END;
     data.widthHint = Math.max(convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH),
-                              clearButton.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+        clearButton.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
     clearButton.setLayoutData(data);
 
     contentTypesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -232,16 +233,16 @@ public class FormatsPanel extends Composite {
       }
     });
     excludedButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setEnabled(true);
-			}
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        setEnabled(true);
+      }
     });
     preserveFirstLineButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				firstLinePatternText.setEnabled(preserveFirstLineButton.getSelection());
-			}
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        firstLinePatternText.setEnabled(preserveFirstLineButton.getSelection());
+      }
     });
     clearButton.addSelectionListener(new SelectionListener() {
       public void widgetDefaultSelected(SelectionEvent e) {
@@ -253,11 +254,11 @@ public class FormatsPanel extends Composite {
     });
     ModifyListener listener = new ModifyListener() {
       public void modifyText(ModifyEvent e) {
-        if ( e.widget == firstLineText ) {
+        if (e.widget == firstLineText) {
           length1.setText(LENGTH_LABEL_PREFIX + firstLineText.getText().length());
-        } else if ( e.widget == linePrefixText ) {
+        } else if (e.widget == linePrefixText) {
           length2.setText(LENGTH_LABEL_PREFIX + linePrefixText.getText().length());
-        } else if ( e.widget == lastLineText ) {
+        } else if (e.widget == lastLineText) {
           length3.setText(LENGTH_LABEL_PREFIX + lastLineText.getText().length());
         }
       }
@@ -273,7 +274,8 @@ public class FormatsPanel extends Composite {
   }
 
   private void saveCurrentFormat() {
-    if ( currentId == null ) return;
+    if (currentId == null)
+      return;
 
     boolean ex = excludedButton.getSelection();
     String fl = firstLineText.getText();
@@ -283,17 +285,16 @@ public class FormatsPanel extends Composite {
     boolean lf = lineFormatButton.getSelection();
     boolean pf = preserveFirstLineButton.getSelection();
     String flp = firstLinePatternText.getText().trim();
-    if ( ! ex && ! lf && ! pf
-    		&& fl.trim().length() + lp.trim().length() + ll.trim().length() == 0 ) {
+    if (!ex && !lf && !pf && fl.trim().length() + lp.trim().length() + ll.trim().length() == 0) {
       headerFormats.remove(currentId);
     } else {
       HeaderFormat format = headerFormats.get(currentId);
-      if ( format == null ) {
+      if (format == null) {
         format = new HeaderFormat(currentId);
         headerFormats.put(currentId, format);
       }
       format.setExcluded(ex);
-      if ( ! ex ) {
+      if (!ex) {
         format.setBeginLine(fl);
         format.setLinePrefix(lp);
         format.setEndLine(ll);
@@ -310,14 +311,13 @@ public class FormatsPanel extends Composite {
     boolean excluded = excludedButton.getSelection();
     contentTypesViewer.getControl().setEnabled(enabled);
     excludedButton.setEnabled(enabled);
-    firstLineText.setEnabled(enabled && ! excluded);
-    linePrefixText.setEnabled(enabled && ! excluded);
-    lastLineText.setEnabled(enabled && ! excluded);
-    postBlankLinesText.setEnabled(enabled && ! excluded);
-    lineFormatButton.setEnabled(enabled && ! excluded);
-    preserveFirstLineButton.setEnabled(enabled && ! excluded);
-    firstLinePatternText.setEnabled(enabled && ! excluded
-    		&& preserveFirstLineButton.getSelection());
+    firstLineText.setEnabled(enabled && !excluded);
+    linePrefixText.setEnabled(enabled && !excluded);
+    lastLineText.setEnabled(enabled && !excluded);
+    postBlankLinesText.setEnabled(enabled && !excluded);
+    lineFormatButton.setEnabled(enabled && !excluded);
+    preserveFirstLineButton.setEnabled(enabled && !excluded);
+    firstLinePatternText.setEnabled(enabled && !excluded && preserveFirstLineButton.getSelection());
     clearButton.setEnabled(enabled);
   }
 

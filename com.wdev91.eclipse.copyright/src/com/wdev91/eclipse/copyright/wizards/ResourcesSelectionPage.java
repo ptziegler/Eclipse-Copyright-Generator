@@ -59,7 +59,7 @@ public class ResourcesSelectionPage extends WizardPage {
     PatternFilter filter = new PatternFilter() {
       @Override
       public boolean isElementSelectable(Object element) {
-        if ( element instanceof CopyrightSelectionItem ) {
+        if (element instanceof CopyrightSelectionItem) {
           return ((CopyrightSelectionItem) element).getResource() instanceof IFile;
         }
         return false;
@@ -67,15 +67,15 @@ public class ResourcesSelectionPage extends WizardPage {
 
       @Override
       protected boolean isLeafMatch(Viewer viewer, Object element) {
-        if ( element instanceof CopyrightSelectionItem
-        		&& ((CopyrightSelectionItem) element).getResource() instanceof IFile ) {
+        if (element instanceof CopyrightSelectionItem
+            && ((CopyrightSelectionItem) element).getResource() instanceof IFile) {
           return super.isLeafMatch(viewer, element);
         }
         return false;
       }
     };
-    CheckboxFilteredTree filteredTree = new CheckboxFilteredTree(top,
-    		SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, filter, true);
+    CheckboxFilteredTree filteredTree = new CheckboxFilteredTree(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, filter,
+        true);
 
     viewer = filteredTree.getViewer();
     viewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -84,7 +84,7 @@ public class ResourcesSelectionPage extends WizardPage {
     viewer.addCheckStateListener(new ICheckStateListener() {
       public void checkStateChanged(CheckStateChangedEvent event) {
         CopyrightSelectionItem element = (CopyrightSelectionItem) event.getElement();
-        if ( element.getResource() instanceof IFile ) {
+        if (element.getResource() instanceof IFile) {
           checkedCount += event.getChecked() ? 1 : -1;
           element.setSelected(event.getChecked() ? 2 : 0);
         } else {
@@ -119,7 +119,7 @@ public class ResourcesSelectionPage extends WizardPage {
     ArrayList<IFile> selection = new ArrayList<IFile>();
     for (Object o : viewer.getCheckedElements()) {
       CopyrightSelectionItem item = (CopyrightSelectionItem) o;
-      if ( item.getResource() instanceof IFile ) {
+      if (item.getResource() instanceof IFile) {
         selection.add((IFile) item.getResource());
       }
     }
@@ -130,9 +130,9 @@ public class ResourcesSelectionPage extends WizardPage {
     for (TreeItem item : items) {
       item.setChecked(true);
       Object data = item.getData();
-      if ( data != null ) {
+      if (data != null) {
         CopyrightSelectionItem csi = (CopyrightSelectionItem) data;
-        if ( csi.getResource() instanceof IFile ) {
+        if (csi.getResource() instanceof IFile) {
           checkedCount++;
         }
       }
@@ -154,7 +154,7 @@ public class ResourcesSelectionPage extends WizardPage {
 
   private void setSubtreeChecked(CopyrightSelectionItem element, boolean grayed) {
     CopyrightSelectionItem[] children = element.getChildren();
-    if ( children != null ) {
+    if (children != null) {
       for (CopyrightSelectionItem child : children) {
         viewer.setGrayChecked(child, grayed);
         setSubtreeChecked(child, grayed);
@@ -164,12 +164,12 @@ public class ResourcesSelectionPage extends WizardPage {
 
   private void updateCount(CopyrightSelectionItem element, boolean checked) {
     element.setSelected(checked ? 2 : 0);
-    if ( element.getResource() instanceof IFile ) {
+    if (element.getResource() instanceof IFile) {
       boolean isChecked = viewer.getChecked(element);
-      if ( isChecked && ! checked ) {
-        checkedCount --;
-      } else if ( (! isChecked) && checked ) {
-        checkedCount ++;
+      if (isChecked && !checked) {
+        checkedCount--;
+      } else if ((!isChecked) && checked) {
+        checkedCount++;
       }
     } else {
       for (CopyrightSelectionItem child : element.getChildren()) {
@@ -179,17 +179,19 @@ public class ResourcesSelectionPage extends WizardPage {
   }
 
   private void updateParentState(CopyrightSelectionItem parent) {
-    if ( parent == null ) return;
+    if (parent == null)
+      return;
 
     CopyrightSelectionItem[] children = parent.getChildren();
     int checked = 0;
     int grayed = 0;
     for (CopyrightSelectionItem child : children) {
-      if ( viewer.getChecked(child) ) checked++;
-      if ( viewer.getGrayed(child) ) grayed++;
+      if (viewer.getChecked(child))
+        checked++;
+      if (viewer.getGrayed(child))
+        grayed++;
     }
-    int selected = (grayed > 0 || (checked < children.length && checked > 0))
-    		? 1 : (checked + grayed > 0 ? 2 : 0);
+    int selected = (grayed > 0 || (checked < children.length && checked > 0)) ? 1 : (checked + grayed > 0 ? 2 : 0);
     viewer.setChecked(parent, selected > 0);
     viewer.setGrayed(parent, selected == 1);
     parent.setSelected(selected);
@@ -198,9 +200,9 @@ public class ResourcesSelectionPage extends WizardPage {
   }
 
   protected void validatePage() {
-    selectionReport.setText(totalCount > 0
-    		? NLS.bind(Messages.ResourcesSelectionPage_selectedFileInfo, checkedCount, totalCount)
-    				: Messages.ResourcesSelectionPage_noResourcesInfo);
+    selectionReport
+        .setText(totalCount > 0 ? NLS.bind(Messages.ResourcesSelectionPage_selectedFileInfo, checkedCount, totalCount)
+            : Messages.ResourcesSelectionPage_noResourcesInfo);
     setPageComplete(checkedCount > 0);
   }
 }

@@ -68,12 +68,12 @@ public class ProjectSelectionWizardPage extends WizardPage {
     viewer.setContentProvider(new WorkbenchContentProvider() {
       @Override
       public Object[] getChildren(Object element) {
-        if ( ! (element instanceof IWorkspace) ) {
+        if (!(element instanceof IWorkspace)) {
           return new Object[0];
         }
         List<IProject> projects = new ArrayList<IProject>();
         for (IProject project : ((IWorkspace) element).getRoot().getProjects()) {
-          if ( project.isOpen() && ( projectsFilter == null || projectsFilter.contains(project) ) ) {
+          if (project.isOpen() && (projectsFilter == null || projectsFilter.contains(project))) {
             projects.add(project);
           }
         }
@@ -101,7 +101,7 @@ public class ProjectSelectionWizardPage extends WizardPage {
 
     Listener listener = new Listener() {
       public void handleEvent(Event event) {
-        if ( event.widget == override ) {
+        if (event.widget == override) {
           overrideText.setEnabled(override.getSelection());
         }
         validatePage();
@@ -116,24 +116,22 @@ public class ProjectSelectionWizardPage extends WizardPage {
   }
 
   /**
-   * Returns the override selection, coded as an integer:
-   *  0: no override of projects copyright settings
-   *  1: override header content only. Projects header formats definitions are preserved.
-   *  2: override header content and formats definitions.
+   * Returns the override selection, coded as an integer: 0: no override of
+   * projects copyright settings 1: override header content only. Projects header
+   * formats definitions are preserved. 2: override header content and formats
+   * definitions.
    * 
    * @return override selection code
    */
   protected int getOverrideSelection() {
     return override.getSelection()
-           ? (overrideText.getSelection()
-              ? CopyrightSettings.OVERRIDE_TEXT
-              : CopyrightSettings.OVERRIDE_ALL)
-           : CopyrightSettings.OVERRIDE_NONE;
+        ? (overrideText.getSelection() ? CopyrightSettings.OVERRIDE_TEXT : CopyrightSettings.OVERRIDE_ALL)
+        : CopyrightSettings.OVERRIDE_NONE;
   }
 
   /**
-   * Returns an array of all the selected projects, on which the copyright will
-   * be applied.
+   * Returns an array of all the selected projects, on which the copyright will be
+   * applied.
    * 
    * @return array of projects
    */

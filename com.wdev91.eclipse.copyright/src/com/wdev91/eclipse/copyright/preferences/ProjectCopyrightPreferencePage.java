@@ -89,8 +89,7 @@ public class ProjectCopyrightPreferencePage extends PropertyPage {
 
     TabItem headerTab = new TabItem(tab, SWT.NONE);
     headerTab.setText(Messages.CopyrightPreferencePage_labelHeader);
-    headerText = new Text(tab, SWT.BORDER | SWT.MULTI | SWT.WRAP
-    		| SWT.H_SCROLL | SWT.V_SCROLL);
+    headerText = new Text(tab, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL);
     headerTab.setControl(headerText);
 
     TabItem formatsTab = new TabItem(tab, SWT.NONE);
@@ -99,14 +98,14 @@ public class ProjectCopyrightPreferencePage extends PropertyPage {
     formatsTab.setControl(formats);
 
     enableButton.addSelectionListener(new SelectionListener() {
-      public void widgetDefaultSelected(SelectionEvent e) {}
+      public void widgetDefaultSelected(SelectionEvent e) {
+      }
 
       public void widgetSelected(SelectionEvent e) {
         boolean enabled = enableButton.getSelection();
-        if ( firstEnabled && enabled ) {
-          if ( MessageDialog.openQuestion(getShell(),
-                                          Messages.ProjectCopyrightPreferencePage_tabFormats,
-                                          Messages.ProjectCopyrightPreferencePage_msgInitialize) ) {
+        if (firstEnabled && enabled) {
+          if (MessageDialog.openQuestion(getShell(), Messages.ProjectCopyrightPreferencePage_tabFormats,
+              Messages.ProjectCopyrightPreferencePage_msgInitialize)) {
             formats.setFormats(CopyrightManager.getHeadersFormats());
           }
           firstEnabled = false;
@@ -117,18 +116,18 @@ public class ProjectCopyrightPreferencePage extends PropertyPage {
 
     doEnable(false);
     ProjectPreferences preferences = CopyrightManager.getProjectPreferences(project);
-    if ( preferences != null && preferences != ProjectPreferences.NO_PREFS ) {
-      if ( preferences.getOwner() != null ) {
+    if (preferences != null && preferences != ProjectPreferences.NO_PREFS) {
+      if (preferences.getOwner() != null) {
         ownerText.setText(preferences.getOwner());
       }
-      if ( preferences.getHeaderText() != null || preferences.getFormats() != null ) {
+      if (preferences.getHeaderText() != null || preferences.getFormats() != null) {
         enableButton.setSelection(true);
         String text = preferences.getHeaderText();
-        if ( text != null ) {
+        if (text != null) {
           headerText.setText(text);
         }
         Map<String, HeaderFormat> hf = preferences.getFormats();
-        if ( hf != null ) {
+        if (hf != null) {
           formats.setFormats(hf.values());
         }
         doEnable(true);
@@ -157,21 +156,18 @@ public class ProjectCopyrightPreferencePage extends PropertyPage {
     ProjectPreferences preferences = new ProjectPreferences();
 
     String owner = ownerText.getText().trim();
-    if ( owner.length() > 0 ) {
+    if (owner.length() > 0) {
       preferences.setOwner(owner);
     }
 
-    if ( enableButton.getSelection() ) {
+    if (enableButton.getSelection()) {
       Collection<HeaderFormat> headerFormats = formats.getFormats();
       for (HeaderFormat format : headerFormats) {
-        if ( ! format.isExcluded()
-        		&& ( format.getBeginLine().trim().length() == 0
-        		|| format.getEndLine().trim().length() == 0 ) ) {
+        if (!format.isExcluded()
+            && (format.getBeginLine().trim().length() == 0 || format.getEndLine().trim().length() == 0)) {
           MessageDialog.openError(getShell(), Messages.ProjectCopyrightPreferencePage_errTitle,
-        		  NLS.bind(Messages.HeadersPreferencePage_errorInvalidHeaderFormat,
-        				  Platform.getContentTypeManager()
-        				  .getContentType(format.getContentId())
-        				  .getName()));
+              NLS.bind(Messages.HeadersPreferencePage_errorInvalidHeaderFormat,
+                  Platform.getContentTypeManager().getContentType(format.getContentId()).getName()));
           return false;
         }
       }
@@ -184,11 +180,10 @@ public class ProjectCopyrightPreferencePage extends PropertyPage {
       return super.performOk();
     } catch (IOException e) {
       MessageDialog.openError(getShell(), Messages.ProjectCopyrightPreferencePage_errTitle,
-                              NLS.bind(Messages.ProjectCopyrightPreferencePage_errmsgOnSave, e.getMessage()));
+          NLS.bind(Messages.ProjectCopyrightPreferencePage_errmsgOnSave, e.getMessage()));
       return false;
     } catch (CopyrightException e) {
-      MessageDialog.openError(getShell(), Messages.ProjectCopyrightPreferencePage_errTitle,
-    		  e.getMessage());
+      MessageDialog.openError(getShell(), Messages.ProjectCopyrightPreferencePage_errTitle, e.getMessage());
       return false;
     }
   }

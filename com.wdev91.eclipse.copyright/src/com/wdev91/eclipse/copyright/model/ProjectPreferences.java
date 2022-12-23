@@ -24,7 +24,8 @@ public class ProjectPreferences {
   private String headerText = null;
   private Map<String, HeaderFormat> formats = null;
 
-  public ProjectPreferences() {}
+  public ProjectPreferences() {
+  }
 
   public Map<String, HeaderFormat> getFormats() {
     return formats;

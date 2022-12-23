@@ -62,7 +62,7 @@ public class ApplyCopyrightWizard extends Wizard {
 
     IPageChangingListener listener = new IPageChangingListener() {
       public void handlePageChanging(PageChangingEvent event) {
-        if ( event.getTargetPage() == selectionPage && settings.isChanged() ) {
+        if (event.getTargetPage() == selectionPage && settings.isChanged()) {
           computeSelectionWithProgress();
         }
       }
@@ -76,28 +76,26 @@ public class ApplyCopyrightWizard extends Wizard {
   private void computeSelectionWithProgress() {
     IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
     try {
-      progressService.runInUI(progressService,
-        new IRunnableWithProgress() {
-          public void run(IProgressMonitor monitor) {
-            monitor.beginTask(Messages.ApplyCopyrightWizard_selectionTaskMessage,
-            		IProgressMonitor.UNKNOWN);
-            try {
-              selectionPage.setSelection(CopyrightManager.selectResources(settings, filesFilter, monitor));
-              settings.setChanged(false);
-              monitor.done();
-            } catch (CopyrightException e) {
-              monitor.done();
-              MessageDialog.openError(getShell(), Messages.ApplyCopyrightWizard_error, e.getMessage());
-            }
+      progressService.runInUI(progressService, new IRunnableWithProgress() {
+        public void run(IProgressMonitor monitor) {
+          monitor.beginTask(Messages.ApplyCopyrightWizard_selectionTaskMessage, IProgressMonitor.UNKNOWN);
+          try {
+            selectionPage.setSelection(CopyrightManager.selectResources(settings, filesFilter, monitor));
+            settings.setChanged(false);
+            monitor.done();
+          } catch (CopyrightException e) {
+            monitor.done();
+            MessageDialog.openError(getShell(), Messages.ApplyCopyrightWizard_error, e.getMessage());
           }
-        },
-        null
-      );
-    } catch (Exception e) {}
+        }
+      }, null);
+    } catch (Exception e) {
+    }
   }
 
   /**
    * Init the wizard with a selection of projects.
+   * 
    * @param projects Projects to pre-select
    */
   protected void init(IProject[] projects) {

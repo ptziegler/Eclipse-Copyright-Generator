@@ -42,7 +42,8 @@ public class ApplyCopyrightAction implements IWorkbenchWindowActionDelegate {
   /**
    * The constructor.
    */
-  public ApplyCopyrightAction() {}
+  public ApplyCopyrightAction() {
+  }
 
   /**
    * Disposes any system resources we previously allocated.
@@ -55,17 +56,17 @@ public class ApplyCopyrightAction implements IWorkbenchWindowActionDelegate {
   }
 
   public Object getAdapter(Object element, Class<?> adapterType) {
-    if ( adapterType.isInstance(element) ) {
+    if (adapterType.isInstance(element)) {
       return element;
     }
     if (element instanceof IAdaptable) {
       Object adapted = ((IAdaptable) element).getAdapter(adapterType);
-      if ( adapterType.isInstance(adapted) ) {
+      if (adapterType.isInstance(adapted)) {
         return adapted;
       }
     }
     Object adapted = Platform.getAdapterManager().getAdapter(element, adapterType);
-    if ( adapterType.isInstance(adapted) ) {
+    if (adapterType.isInstance(adapted)) {
       return adapted;
     }
     return null;
@@ -75,19 +76,19 @@ public class ApplyCopyrightAction implements IWorkbenchWindowActionDelegate {
     ArrayList<IProject> projects = new ArrayList<IProject>();
 
     for (Object obj : getSelection().toArray()) {
-      if ( obj instanceof IResource ) {
+      if (obj instanceof IResource) {
         projects.add(((IResource) obj).getProject());
-      } else if ( obj instanceof ResourceMapping ) {
+      } else if (obj instanceof ResourceMapping) {
         for (IProject project : ((ResourceMapping) obj).getProjects()) {
           projects.add(project);
         }
-      } else if ( obj != null ) {
+      } else if (obj != null) {
         Object adapted = getAdapter(obj, IResource.class);
-        if ( adapted instanceof IResource ) {
+        if (adapted instanceof IResource) {
           projects.add(((IResource) adapted).getProject());
         } else {
           adapted = getAdapter(obj, ResourceMapping.class);
-          if ( adapted instanceof ResourceMapping ) {
+          if (adapted instanceof ResourceMapping) {
             for (IProject project : ((ResourceMapping) adapted).getProjects()) {
               projects.add(project);
             }
@@ -99,16 +100,15 @@ public class ApplyCopyrightAction implements IWorkbenchWindowActionDelegate {
   }
 
   protected IStructuredSelection getSelection() {
-    if ( selection == null ) {
+    if (selection == null) {
       selection = StructuredSelection.EMPTY;
     }
     return selection;
   }
 
   /**
-   * Initialisation of the action.
-   * Caches window object in order to be able to provide parent shell for the
-   * wizard dialog.
+   * Initialisation of the action. Caches window object in order to be able to
+   * provide parent shell for the wizard dialog.
    * 
    * @see IWorkbenchWindowActionDelegate#init
    */
@@ -117,8 +117,7 @@ public class ApplyCopyrightAction implements IWorkbenchWindowActionDelegate {
   }
 
   /**
-   * Action execution.
-   * Opens the wizard dialog.
+   * Action execution. Opens the wizard dialog.
    * 
    * @see IWorkbenchWindowActionDelegate#run
    */
@@ -132,8 +131,8 @@ public class ApplyCopyrightAction implements IWorkbenchWindowActionDelegate {
    * @see IWorkbenchWindowActionDelegate#selectionChanged
    */
   public void selectionChanged(IAction action, ISelection selection) {
-    if ( selection instanceof IStructuredSelection ) {
-	  this.selection = (IStructuredSelection) selection;
+    if (selection instanceof IStructuredSelection) {
+      this.selection = (IStructuredSelection) selection;
     }
   }
 }

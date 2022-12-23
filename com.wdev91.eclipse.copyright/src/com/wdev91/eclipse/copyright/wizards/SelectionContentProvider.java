@@ -18,7 +18,7 @@ import com.wdev91.eclipse.copyright.model.CopyrightSelectionItem;
 public class SelectionContentProvider implements ITreeContentProvider {
 
   public Object[] getChildren(Object parentElement) {
-    if ( parentElement instanceof CopyrightSelectionInput ) {
+    if (parentElement instanceof CopyrightSelectionInput) {
       return ((CopyrightSelectionInput) parentElement).getRootSelection();
     } else {
       CopyrightSelectionItem[] children = ((CopyrightSelectionItem) parentElement).getChildren();
@@ -27,7 +27,7 @@ public class SelectionContentProvider implements ITreeContentProvider {
   }
 
   public Object getParent(Object element) {
-    if ( element instanceof CopyrightSelectionItem ) {
+    if (element instanceof CopyrightSelectionItem) {
       return ((CopyrightSelectionItem) element).getParent();
     }
     return null;
@@ -41,7 +41,9 @@ public class SelectionContentProvider implements ITreeContentProvider {
     return getChildren(inputElement);
   }
 
-  public void dispose() {}
+  public void dispose() {
+  }
 
-  public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+  public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+  }
 }
