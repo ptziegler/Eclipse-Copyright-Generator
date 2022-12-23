@@ -8,6 +8,40 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>docs/</module>
+        <module>com.wdev91.eclipse.copyright</module>
+        <module>com.wdev91.eclipse.copyright.feature</module>
+        <module>com.wdev91.eclipse.copyright.site</module>
+        <module>com.wdev91.eclipse.copyright.target</module>
+        <!-- <module>docs/</module> -->
     </modules>
+    
+      <properties>
+        <tycho-version>2.7.5</tycho-version>
+      </properties>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>${tycho-version}</version>
+                <extensions>true</extensions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho-version}</version>
+                <configuration>
+                    <target>
+                        <artifact> 
+                            <groupId>com.wdev91.eclipse.copyright</groupId> 
+                            <artifactId>target-platform</artifactId> 
+                            <version>${project.version}</version>
+                        </artifact> 
+                    </target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="com.wdev91.eclipse.copyright.feature">
+      <category name="com.wdev.eclipse.copyright"/>
+   </feature>
+   <category-def name="com.wdev.eclipse.copyright" label="Eclipse Copyright Generator"/>
+</site>
