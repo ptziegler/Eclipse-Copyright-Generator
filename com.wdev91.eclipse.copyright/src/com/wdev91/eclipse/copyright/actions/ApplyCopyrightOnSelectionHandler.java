@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.wdev91.eclipse.copyright.actions;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +20,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
@@ -63,23 +62,9 @@ public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
     List<IFile> resources = new ArrayList<IFile>();
     IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getActiveMenuSelection(event);
     for (Object sel : selection.toArray()) {
-      if (sel instanceof IFile || sel instanceof IFolder) {
-        addFile((IResource) sel, resources);
-      } else {
-        Object ao = null;
-        if (sel instanceof IAdaptable) {
-          ao = ((IAdaptable) sel).getAdapter(IFile.class);
-          if (ao == null) {
-            ao = ((IAdaptable) sel).getAdapter(IFolder.class);
-          }
-        }
-        if (ao == null) {
-          ao = findJavaResource(sel);
-        }
-        if (ao != null) {
-          addFile((IResource) ao, resources);
-        }
-      }
+      IResource resource = Adapters.adapt(sel, IResource.class);
+
+      addFile(resource, resources);
     }
 
     // List of projects containing the selected files, with analyze if wizard is
@@ -109,22 +94,6 @@ public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
       }
     }
 
-    return null;
-  }
-
-  private IResource findJavaResource(Object obj) {
-    if (!obj.getClass().getPackage().getName().startsWith("org.eclipse.jdt")) //$NON-NLS-1$
-      return null;
-
-    try {
-      Method m = obj.getClass().getMethod("getResource"); //$NON-NLS-1$
-      Object res = m.invoke(obj);
-      if (res instanceof IFile || res instanceof IFolder) {
-        return (IResource) res;
-      }
-    } catch (Exception e) {
-      // Method not found
-    }
     return null;
   }
 }
