@@ -9,7 +9,7 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zgKXgIMdEe2soJrD7x9OQw" featurename="menuContributions" parentElementId="xpath:/">
-    <elements xsi:type="menu:MenuContribution" xmi:id="_04NIgIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.menucontribution.navigator.ApplyCopyright" positionInParent="after=additions" parentId="org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
+    <elements xsi:type="menu:MenuContribution" xmi:id="_04NIgIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.menucontribution.navigator.ApplyCopyright" positionInParent="after=additions" parentId="org.eclipse.jdt.ui.PackageExplorer">
       <persistedState key="persistState" value="false"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_7JJiIIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handledmenuitem.navigator.ApplyCopyright" label="%actionApply_label" iconURI="platform:/plugin/com.wdev91.eclipse.copyright/icons/copyright.gif" command="_m8raEIMjEe2soJrD7x9OQw">
         <persistedState key="persistState" value="false"/>

@@ -35,7 +35,7 @@ import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
  * @see IWorkbenchWindowActionDelegate
  */
 public class ApplyCopyrightHandler {
-  private static final String PROJECT_EXPLORER_PART_ID = "org.eclipse.ui.navigator.ProjectExplorer";
+  private static final String PACKAGE_EXPLORER_PART_ID = "org.eclipse.jdt.ui.PackageExplorer";
 
   @Inject
   private ESelectionService selectionService;
@@ -50,7 +50,7 @@ public class ApplyCopyrightHandler {
   }
 
   private IStructuredSelection getSelection() {
-    Object selection = selectionService.getSelection(PROJECT_EXPLORER_PART_ID);
+    Object selection = selectionService.getSelection(PACKAGE_EXPLORER_PART_ID);
 
     return selection instanceof IStructuredSelection ? (IStructuredSelection) selection : StructuredSelection.EMPTY;
   }

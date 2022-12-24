@@ -76,7 +76,7 @@ public class ApplyCopyrightOnSelectionHandler {
     }
 
     for (Object resource : selection) {
-      if (Adapters.adapt(resource, IResource.class) == null || resource instanceof IProject) {
+      if (Adapters.adapt(resource, IResource.class) == null) {
         return false;
       }
     }
