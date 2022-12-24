@@ -79,7 +79,7 @@ public class CopyrightManager {
       try {
         return applyCopyright(settings, monitor);
       } catch (CopyrightException e) {
-        return new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+        return Status.error(e.getMessage(), e);
       }
     }
   }
