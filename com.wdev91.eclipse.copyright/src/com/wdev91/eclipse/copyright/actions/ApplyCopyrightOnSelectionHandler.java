@@ -10,21 +10,27 @@
  ******************************************************************************/
 package com.wdev91.eclipse.copyright.actions;
 
-import java.util.ArrayList;
+import static org.eclipse.e4.ui.services.IServiceConstants.ACTIVE_SELECTION;
+import static org.eclipse.e4.ui.services.IServiceConstants.ACTIVE_SHELL;
+
 import java.util.List;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Evaluate;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.wdev91.eclipse.copyright.Messages;
 import com.wdev91.eclipse.copyright.actions.internal.CopyrightUtils;
@@ -36,23 +42,20 @@ import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
  * Apply copyright... command. Allow to apply a copyright on selected resources
  * from a popup menu. Mainly concern Eclipse navigator and package explorer.
  */
-public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
-  public static final String COMMAND_ID = "com.wdev91.eclipse.copyright.ApplyCopyrightCommand"; //$NON-NLS-1$
+public class ApplyCopyrightOnSelectionHandler {
+  @Inject
+  @Named(ACTIVE_SHELL)
+  private Shell shell;
 
-  public Object execute(ExecutionEvent event) throws ExecutionException {
-    IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getActiveMenuSelection(event);
+  @Execute
+  public void execute(@Named(ACTIVE_SELECTION) IStructuredSelection selection) throws CoreException {
     // Creates list of selected files
-    List<IFile> resources = null;
-    try {
-      resources = ResourcesUtils.getAllFiles(selection);
-    } catch (CoreException e) {
-    }
+    List<IFile> resources = ResourcesUtils.getAllFiles(selection);
 
     // List of projects containing the selected files
     List<IProject> projects = ResourcesUtils.getAllProjects(resources);
 
     // Apply the copyrights
-    Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
     if (CopyrightUtils.shouldOpenCopyrightWizard(projects)) {
       ApplyCopyrightWizard.openWizard(shell, projects, resources);
     } else {
@@ -64,6 +67,25 @@ public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
       }
     }
 
-    return null;
+  }
+
+  @CanExecute
+  public boolean canExecute(@Optional @Named(ACTIVE_SELECTION) IStructuredSelection selection) {
+    if (selection == null || selection.isEmpty()) {
+      return false;
+    }
+
+    for (Object resource : selection) {
+      if (Adapters.adapt(resource, IResource.class) == null || resource instanceof IProject) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Evaluate
+  public boolean isVisible(@Optional @Named(ACTIVE_SELECTION) IStructuredSelection selection) {
+    return canExecute(selection);
   }
 }
