@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
-import com.wdev91.eclipse.copyright.Activator;
+import com.wdev91.eclipse.copyright.Constants;
 import com.wdev91.eclipse.copyright.Messages;
 import com.wdev91.eclipse.copyright.model.CopyrightException;
 import com.wdev91.eclipse.copyright.model.CopyrightManager;
@@ -35,7 +35,7 @@ import com.wdev91.eclipse.copyright.model.CopyrightSettings;
  * Wizard to apply copyright on resources in the workspace projects.
  */
 public class ApplyCopyrightWizard extends Wizard {
-  public static final String CONTEXT_ID = Activator.PLUGIN_ID + ".wizard"; //$NON-NLS-1$
+  public static final String CONTEXT_ID = Constants.BUNDLE_ID + ".wizard"; //$NON-NLS-1$
 
   protected ProjectSelectionWizardPage projectsPage;
   protected CopyrightSettingsPage settingsPage;

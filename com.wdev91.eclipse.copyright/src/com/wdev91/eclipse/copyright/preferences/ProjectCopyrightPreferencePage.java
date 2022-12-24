@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.SWT;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-import com.wdev91.eclipse.copyright.Activator;
+import com.wdev91.eclipse.copyright.Constants;
 import com.wdev91.eclipse.copyright.Messages;
 import com.wdev91.eclipse.copyright.model.CopyrightException;
 import com.wdev91.eclipse.copyright.model.CopyrightManager;
@@ -44,7 +44,7 @@ import com.wdev91.eclipse.copyright.model.HeaderFormat;
 import com.wdev91.eclipse.copyright.model.ProjectPreferences;
 
 public class ProjectCopyrightPreferencePage extends PropertyPage {
-  public static final String CONTEXT_ID = Activator.PLUGIN_ID + ".prefs_project"; //$NON-NLS-1$
+  public static final String CONTEXT_ID = Constants.BUNDLE_ID + ".prefs_project"; //$NON-NLS-1$
 
   protected IProject project;
   protected Text ownerText;

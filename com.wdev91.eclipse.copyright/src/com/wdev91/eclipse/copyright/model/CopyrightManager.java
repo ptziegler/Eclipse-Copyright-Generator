@@ -48,6 +48,7 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -55,7 +56,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.wdev91.eclipse.copyright.Activator;
 import com.wdev91.eclipse.copyright.Constants;
 import com.wdev91.eclipse.copyright.Messages;
 
@@ -148,7 +148,7 @@ public class CopyrightManager {
     monitor.beginTask(Messages.CopyrightManager_taskName, settings.getFiles().length);
     try {
       String user = System.getProperty("user.name"); //$NON-NLS-1$
-      String owner = Activator.getDefault().getPreferenceStore().getString(Constants.PREFERENCES_OWNER);
+      String owner = InstanceScope.INSTANCE.getNode(Constants.BUNDLE_ID).get(Constants.PREFERENCES_OWNER, "");
       if (owner.length() <= 0) {
         owner = user;
       }
@@ -411,7 +411,7 @@ public class CopyrightManager {
    * @return List of default copyrights
    */
   public static List<Copyright> getDefaultCopyrights() {
-    URL url = Activator.getDefault().getBundle().getResource(REPOSITORY_FILENAME);
+    URL url = Constants.BUNDLE.getResource(REPOSITORY_FILENAME);
     try {
       return readCopyrights(url.openStream());
     } catch (IOException e) {
@@ -484,7 +484,7 @@ public class CopyrightManager {
    */
   private static File getHeaderFile() throws IOException {
     if (headersFile == null) {
-      headersFile = Activator.getDefault().getStateLocation().append(HEADERS_FILENAME).toFile();
+      headersFile = Constants.STATE_LOCATION.append(HEADERS_FILENAME).toFile();
     }
     return headersFile;
   }
@@ -629,7 +629,7 @@ public class CopyrightManager {
    */
   private static File getProjectPreferencesFile(IProject project) {
     File projectSettings = new File(project.getLocation().toFile(), ".settings"); //$NON-NLS-1$
-    return new File(projectSettings, Activator.PLUGIN_ID + ".xml"); //$NON-NLS-1$
+    return new File(projectSettings, Constants.BUNDLE_ID + ".xml"); //$NON-NLS-1$
   }
 
   /**
@@ -639,7 +639,7 @@ public class CopyrightManager {
    * @throws IOException
    */
   private static File getRepositoryFile() throws IOException {
-    return Activator.getDefault().getStateLocation().append(REPOSITORY_FILENAME).toFile();
+    return Constants.STATE_LOCATION.append(REPOSITORY_FILENAME).toFile();
   }
 
   /**

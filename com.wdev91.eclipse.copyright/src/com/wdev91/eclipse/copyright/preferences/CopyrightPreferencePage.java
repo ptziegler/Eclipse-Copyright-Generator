@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.wdev91.eclipse.copyright.preferences;
 
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -39,19 +40,19 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import com.wdev91.eclipse.copyright.Activator;
 import com.wdev91.eclipse.copyright.Constants;
 import com.wdev91.eclipse.copyright.Messages;
 import com.wdev91.eclipse.copyright.model.Copyright;
 import com.wdev91.eclipse.copyright.model.CopyrightException;
 import com.wdev91.eclipse.copyright.viewers.CopyrightContentProvider;
 import com.wdev91.eclipse.copyright.viewers.CopyrightLabelProvider;
-import com.wdev91.eclipse.copyright.viewers.CopyrightsInput;
 import com.wdev91.eclipse.copyright.viewers.CopyrightsComparator;
+import com.wdev91.eclipse.copyright.viewers.CopyrightsInput;
 
 public class CopyrightPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
-  public static final String CONTEXT_ID = Activator.PLUGIN_ID + ".prefs_copyright"; //$NON-NLS-1$
+  public static final String CONTEXT_ID = Constants.BUNDLE_ID + ".prefs_copyright"; //$NON-NLS-1$
   private static final int LIST_LINES_NUMBER = 10;
 
   protected Text ownerText;
@@ -253,7 +254,7 @@ public class CopyrightPreferencePage extends PreferencePage implements IWorkbenc
    * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
    */
   public void init(IWorkbench workbench) {
-    setPreferenceStore(Activator.getDefault().getPreferenceStore());
+    setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.BUNDLE_ID));
   }
 
   @Override

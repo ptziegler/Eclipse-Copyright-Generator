@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.wdev91.eclipse.copyright;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
 public class Constants {
   public static final String P_YEAR = "year"; //$NON-NLS-1$
   public static final String P_USER = "user"; //$NON-NLS-1$
@@ -22,4 +27,8 @@ public class Constants {
   public static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
   public static final String PREFERENCES_OWNER = "owner"; //$NON-NLS-1$
+
+  public static final Bundle BUNDLE = FrameworkUtil.getBundle(Constants.class);
+  public static final String BUNDLE_ID = BUNDLE.getSymbolicName();
+  public static final IPath STATE_LOCATION = Platform.getStateLocation(BUNDLE);
 }

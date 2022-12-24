@@ -23,13 +23,13 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 
-import com.wdev91.eclipse.copyright.Activator;
+import com.wdev91.eclipse.copyright.Constants;
 import com.wdev91.eclipse.copyright.Messages;
 import com.wdev91.eclipse.copyright.model.CopyrightManager;
 import com.wdev91.eclipse.copyright.model.HeaderFormat;
 
 public class HeadersPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
-  public static final String CONTEXT_ID = Activator.PLUGIN_ID + ".prefs_formats"; //$NON-NLS-1$
+  public static final String CONTEXT_ID = Constants.BUNDLE_ID + ".prefs_formats"; //$NON-NLS-1$
 
   private FormatsPanel formats;
 
