@@ -98,12 +98,12 @@ public class ApplyCopyrightWizard extends Wizard {
    * 
    * @param projects Projects to pre-select
    */
-  protected void init(IProject[] projects) {
+  protected void init(List<IProject> projects) {
     settings = new CopyrightSettings();
-    settings.setProjects(projects);
+    settings.setProjects(projects.toArray(IProject[]::new));
   }
 
-  public static void openWizard(Shell shell, IProject[] projects) {
+  public static void openWizard(Shell shell, List<IProject> projects) {
     ApplyCopyrightWizard wizard = new ApplyCopyrightWizard();
     wizard.init(projects);
     WizardDialog dialog = new WizardDialog(shell, wizard);
@@ -112,7 +112,7 @@ public class ApplyCopyrightWizard extends Wizard {
 
   public static void openWizard(Shell shell, List<IProject> projects, List<IFile> files) {
     ApplyCopyrightWizard wizard = new ApplyCopyrightWizard();
-    wizard.init(projects.toArray(new IProject[] {}));
+    wizard.init(projects);
     wizard.projectsFilter = projects;
     wizard.filesFilter = files;
     WizardDialog dialog = new WizardDialog(shell, wizard);

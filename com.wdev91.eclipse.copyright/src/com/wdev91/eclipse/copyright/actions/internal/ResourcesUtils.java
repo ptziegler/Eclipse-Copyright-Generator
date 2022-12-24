@@ -26,10 +26,12 @@ public abstract class ResourcesUtils {
    * @param resources A list of workspace resources.
    * @return An immutable list of workspace projects.
    */
-  public static List<IProject> getAllProjects(List<? extends IResource> resources) {
+  public static List<IProject> getAllProjects(Iterable<?> resources) {
     Set<IProject> result = new LinkedHashSet<>();
 
-    for (IResource resource : resources) {
+    for (Object object : resources) {
+      IResource resource = Adapters.adapt(object, IResource.class);
+
       result.add(resource.getProject());
     }
 

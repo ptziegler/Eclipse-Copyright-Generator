@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_lsZssIMdEe2soJrD7x9OQw">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_mAshsIMdEe2soJrD7x9OQw" featurename="handlers" parentElementId="xpath:/">
-    <elements xsi:type="commands:Handler" xmi:id="_ne6zMIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handler.ApplyCopyrightOnSelectionHandler" contributionURI="bundleclass://com.wdev91.eclipse.copyright/com.wdev91.eclipse.copyright.actions.ApplyCopyrightOnSelectionHandler" command="_m8raEIMjEe2soJrD7x9OQw">
+    <elements xsi:type="commands:Handler" xmi:id="_ne6zMIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handler.navigator.ApplyCopyright" contributionURI="bundleclass://com.wdev91.eclipse.copyright/com.wdev91.eclipse.copyright.actions.ApplyCopyrightOnSelectionHandler" command="_m8raEIMjEe2soJrD7x9OQw">
+      <persistedState key="persistState" value="false"/>
+    </elements>
+    <elements xsi:type="commands:Handler" xmi:id="_K2GyIIM9Ee2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handler.mainMenu.ApplyCopyright" contributionURI="bundleclass://com.wdev91.eclipse.copyright/com.wdev91.eclipse.copyright.actions.ApplyCopyrightHandler" command="_MquKYIM9Ee2soJrD7x9OQw">
       <persistedState key="persistState" value="false"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zgKXgIMdEe2soJrD7x9OQw" featurename="menuContributions" parentElementId="xpath:/">
-    <elements xsi:type="menu:MenuContribution" xmi:id="_04NIgIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.menucontribution.ApplyCopyright" positionInParent="after=additions" parentId="org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
+    <elements xsi:type="menu:MenuContribution" xmi:id="_04NIgIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.menucontribution.navigator.ApplyCopyright" positionInParent="after=additions" parentId="org.eclipse.ui.navigator.ProjectExplorer#PopupMenu">
       <persistedState key="persistState" value="false"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_7JJiIIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handledmenuitem.ApplyCopyRight" label="%actionApply_label" iconURI="platform:/plugin/com.wdev91.eclipse.copyright/icons/copyright.gif" command="_m8raEIMjEe2soJrD7x9OQw">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_7JJiIIMdEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handledmenuitem.navigator.ApplyCopyright" label="%actionApply_label" iconURI="platform:/plugin/com.wdev91.eclipse.copyright/icons/copyright.gif" command="_m8raEIMjEe2soJrD7x9OQw">
         <persistedState key="persistState" value="false"/>
         <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_ZvRvMIMkEe2soJrD7x9OQw" contributionURI="bundleclass://com.wdev91.eclipse.copyright/com.wdev91.eclipse.copyright.actions.ApplyCopyrightOnSelectionHandler"/>
       </children>
     </elements>
+    <elements xsi:type="menu:MenuContribution" xmi:id="_1-89EIM8Ee2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.menucontribution.mainMenu.ApplyCopyright" positionInParent="after=additions" parentId="project">
+      <persistedState key="persistState" value="false"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_9IEU0IM8Ee2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.handledmenuitem.mainMenu.ApplyCopyright" label="%actionApply_label" iconURI="platform:/plugin/com.wdev91.eclipse.copyright/icons/copyright.gif" command="_MquKYIM9Ee2soJrD7x9OQw">
+        <persistedState key="persistState" value="false"/>
+      </children>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lu6mcIMjEe2soJrD7x9OQw" featurename="commands" parentElementId="xpath:/">
-    <elements xsi:type="commands:Command" xmi:id="_m8raEIMjEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.ApplyCopyrightCommand" commandName="%actionApply_label" category="_q5GzYIMjEe2soJrD7x9OQw">
+    <elements xsi:type="commands:Command" xmi:id="_m8raEIMjEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.command.navigator.ApplyCopyright" commandName="%actionApply_label" category="_q5GzYIMjEe2soJrD7x9OQw">
       <persistedState key="persistState" value="false"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_MquKYIM9Ee2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.command.mainMenu.ApplyCopyright" commandName="%actionApply_label" category="_q5GzYIMjEe2soJrD7x9OQw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_oNT7gIMjEe2soJrD7x9OQw" featurename="categories" parentElementId="xpath:/">
-    <elements xsi:type="commands:Category" xmi:id="_q5GzYIMjEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.Category" name="%actionset_label">
-      <persistedState key="persistState" value="false"/>
-    </elements>
+    <elements xsi:type="commands:Category" xmi:id="_q5GzYIMjEe2soJrD7x9OQw" elementId="com.wdev91.eclipse.copyright.Category" name="%actionset_label"/>
   </fragments>
 </fragment:ModelFragments>
