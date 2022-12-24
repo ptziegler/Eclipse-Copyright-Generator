@@ -16,8 +16,17 @@
     </modules>
     
       <properties>
+        <flatten-version>1.3.0</flatten-version>
         <tycho-version>2.7.5</tycho-version>
+        <maven.deploy.skip>true</maven.deploy.skip>
       </properties>
+      
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/ptziegler/Eclipse-Copyright-Generator</url>
+        </repository>
+    </distributionManagement>
     
     <build>
         <plugins>
@@ -42,6 +51,47 @@
                     </target>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-version}</version>
+                <executions>
+                  <execution>
+                    <id>flatten</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                      <goal>flatten</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>deploy-bundles</id>
+            <activation>
+                <file>
+                    <exists>META-INF/MANIFEST.MF</exists>
+                </file>
+            </activation>
+            <properties>
+                <maven.deploy.skip>false</maven.deploy.skip>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>deploy-features</id>
+            <activation>
+                <file>
+                    <exists>feature.xml</exists>
+                </file>
+            </activation>
+            <properties>
+                <maven.deploy.skip>false</maven.deploy.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>

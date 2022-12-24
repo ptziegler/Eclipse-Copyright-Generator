@@ -24,3 +24,4 @@ target/
 # Maven/Tycho artifacts
 target
 .polyglot.*
+.flattened-pom.xml
