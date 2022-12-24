@@ -17,10 +17,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -30,9 +27,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.wdev91.eclipse.copyright.Messages;
+import com.wdev91.eclipse.copyright.actions.internal.CopyrightUtils;
+import com.wdev91.eclipse.copyright.actions.internal.ResourcesUtils;
 import com.wdev91.eclipse.copyright.model.CopyrightManager;
-import com.wdev91.eclipse.copyright.model.CopyrightSettings;
-import com.wdev91.eclipse.copyright.model.ProjectPreferences;
 import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
 
 /**
@@ -42,55 +39,28 @@ import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
 public class ApplyCopyrightOnSelectionHandler extends AbstractHandler {
   public static final String COMMAND_ID = "com.wdev91.eclipse.copyright.ApplyCopyrightCommand"; //$NON-NLS-1$
 
-  private void addFile(IResource res, List<IFile> resources) {
-    if (res instanceof IFile) {
-      if (!resources.contains(res)) {
-        resources.add((IFile) res);
-      }
-    } else if (res instanceof IFolder) {
-      try {
-        for (IResource member : ((IFolder) res).members(IFolder.EXCLUDE_DERIVED)) {
-          addFile(member, resources);
-        }
-      } catch (CoreException e) {
-      }
-    }
-  }
-
   public Object execute(ExecutionEvent event) throws ExecutionException {
-    // Creates list of selected files
-    List<IFile> resources = new ArrayList<IFile>();
     IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getActiveMenuSelection(event);
-    for (Object sel : selection.toArray()) {
-      IResource resource = Adapters.adapt(sel, IResource.class);
-
-      addFile(resource, resources);
+    // Creates list of selected files
+    List<IFile> resources = null;
+    try {
+      resources = ResourcesUtils.getAllFiles(selection);
+    } catch (CoreException e) {
     }
 
-    // List of projects containing the selected files, with analyze if wizard is
-    // needed
-    List<IProject> projects = new ArrayList<IProject>();
-    boolean wizard = false;
-    for (IFile f : resources) {
-      IProject p = f.getProject();
-      if (!projects.contains(p)) {
-        projects.add(p);
-        ProjectPreferences prefs;
-        if ((prefs = CopyrightManager.getProjectPreferences(p)) == null || prefs.getHeaderText() == null)
-          wizard = true;
-      }
-    }
+    // List of projects containing the selected files
+    List<IProject> projects = ResourcesUtils.getAllProjects(resources);
 
     // Apply the copyrights
     Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-    if (wizard) {
+    if (CopyrightUtils.shouldOpenCopyrightWizard(projects)) {
       ApplyCopyrightWizard.openWizard(shell, projects, resources);
     } else {
-      if (MessageDialog.openConfirm(shell, Messages.ApplyCopyrightOnSelectionHandler_messageTitle,
-          NLS.bind(Messages.ApplyCopyrightOnSelectionHandler_confirmMessage, resources.size()))) {
-        CopyrightSettings settings = new CopyrightSettings();
-        settings.setFiles(resources.toArray(new IFile[] {}));
-        CopyrightManager.applyCopyrightJob(settings);
+      String title = Messages.ApplyCopyrightOnSelectionHandler_messageTitle;
+      String message = NLS.bind(Messages.ApplyCopyrightOnSelectionHandler_confirmMessage, resources.size());
+
+      if (MessageDialog.openConfirm(shell, title, message)) {
+        CopyrightManager.applyCopyrightJob(resources);
       }
     }
 

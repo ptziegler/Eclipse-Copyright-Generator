@@ -353,6 +353,17 @@ public class CopyrightManager {
   }
 
   /**
+   * Creates a job to apply copyright based on the given files.
+   * 
+   * @param files A collection of workspace files.
+   */
+  public static void applyCopyrightJob(Collection<IFile> files) {
+    CopyrightSettings settings = new CopyrightSettings();
+    settings.setFiles(files.toArray(IFile[]::new));
+    CopyrightManager.applyCopyrightJob(settings);
+  }
+
+  /**
    * Returns concatenation of the text content of CDATA_SECTION child nodes of the
    * given parent DOM node
    * 
