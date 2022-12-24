@@ -46,7 +46,7 @@
                         <artifact> 
                             <groupId>com.wdev91.eclipse.copyright</groupId> 
                             <artifactId>target-platform</artifactId> 
-                            <version>${project.version}</version>
+                            <version>1.6.1-SNAPSHOT</version>
                         </artifact> 
                     </target>
                 </configuration>
