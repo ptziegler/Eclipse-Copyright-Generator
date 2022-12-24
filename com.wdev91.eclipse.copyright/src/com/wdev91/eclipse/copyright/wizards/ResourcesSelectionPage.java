@@ -74,8 +74,7 @@ public class ResourcesSelectionPage extends WizardPage {
         return false;
       }
     };
-    CheckboxFilteredTree filteredTree = new CheckboxFilteredTree(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, filter,
-        true);
+    CheckboxFilteredTree filteredTree = new CheckboxFilteredTree(top, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, filter);
 
     viewer = filteredTree.getViewer();
     viewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
