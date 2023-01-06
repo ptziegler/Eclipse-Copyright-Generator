@@ -23,7 +23,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -202,23 +201,9 @@ public class CopyrightPreferencePage extends PreferencePage implements IWorkbenc
     licenseText.setLayoutData(data);
     licenseTab.setControl(licenseTabContent);
 
-    SelectionListener listener = new SelectionListener() {
-      public void widgetDefaultSelected(SelectionEvent e) {
-      }
-
-      public void widgetSelected(SelectionEvent e) {
-        if (e.widget == addButton) {
-          addCopyright();
-        } else if (e.widget == modifyButton) {
-          updateCopyright();
-        } else if (e.widget == deleteButton) {
-          deleteCopyright();
-        }
-      }
-    };
-    addButton.addSelectionListener(listener);
-    modifyButton.addSelectionListener(listener);
-    deleteButton.addSelectionListener(listener);
+    addButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> addCopyright()));
+    modifyButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> updateCopyright()));
+    deleteButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> deleteCopyright()));
 
     ownerText.setText(getPreferenceStore().getString(Constants.PREFERENCES_OWNER));
     updateContent();
