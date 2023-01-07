@@ -13,15 +13,18 @@ package com.wdev91.eclipse.copyright.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -30,9 +33,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import com.wdev91.eclipse.copyright.Messages;
+import com.wdev91.eclipse.copyright.model.CopyrightManager;
 import com.wdev91.eclipse.copyright.model.CopyrightSettings;
+import com.wdev91.eclipse.copyright.model.ProjectPreferences;
 
 /**
  * Wizard page for the selection of projects on which to apply the copyright.
@@ -153,5 +159,44 @@ public class ProjectSelectionWizardPage extends WizardPage {
     setPageComplete(viewer.getCheckedElements().length > 0);
     settings.setProjects(getSelectedProjects());
     settings.setOverride(getOverrideSelection());
+  }
+
+  private static class ProjectLabelProvider implements ILabelProvider {
+    private static final String COPYRIGHT_LABEL = "  (C)"; //$NON-NLS-1$
+
+    private ILabelProvider workbenchProvider;
+
+    ProjectLabelProvider() {
+      workbenchProvider = WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider();
+    }
+
+    public Image getImage(Object element) {
+      return workbenchProvider.getImage(element);
+    }
+
+    public String getText(Object element) {
+      String text = workbenchProvider.getText(element);
+      if (CopyrightManager.getProjectPreferences((IProject) element) != ProjectPreferences.NO_PREFS) {
+        return text + COPYRIGHT_LABEL;
+      } else {
+        return text;
+      }
+    }
+
+    public void addListener(ILabelProviderListener listener) {
+      workbenchProvider.addListener(listener);
+    }
+
+    public void dispose() {
+      workbenchProvider.dispose();
+    }
+
+    public boolean isLabelProperty(Object element, String property) {
+      return workbenchProvider.isLabelProperty(element, property);
+    }
+
+    public void removeListener(ILabelProviderListener listener) {
+      workbenchProvider.removeListener(listener);
+    }
   }
 }

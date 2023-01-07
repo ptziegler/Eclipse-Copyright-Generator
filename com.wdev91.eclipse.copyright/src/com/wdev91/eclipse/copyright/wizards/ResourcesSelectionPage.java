@@ -17,11 +17,14 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -29,6 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PatternFilter;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import com.wdev91.eclipse.copyright.Messages;
 import com.wdev91.eclipse.copyright.controls.CheckboxFilteredTree;
@@ -203,5 +207,64 @@ public class ResourcesSelectionPage extends WizardPage {
         .setText(totalCount > 0 ? NLS.bind(Messages.ResourcesSelectionPage_selectedFileInfo, checkedCount, totalCount)
             : Messages.ResourcesSelectionPage_noResourcesInfo);
     setPageComplete(checkedCount > 0);
+  }
+
+  private static class SelectionContentProvider implements ITreeContentProvider {
+
+    public Object[] getChildren(Object parentElement) {
+      if (parentElement instanceof CopyrightSelectionInput) {
+        return ((CopyrightSelectionInput) parentElement).getRootSelection();
+      } else {
+        CopyrightSelectionItem[] children = ((CopyrightSelectionItem) parentElement).getChildren();
+        return children != null ? children : new Object[] {};
+      }
+    }
+
+    public Object getParent(Object element) {
+      if (element instanceof CopyrightSelectionItem) {
+        return ((CopyrightSelectionItem) element).getParent();
+      }
+      return null;
+    }
+
+    public boolean hasChildren(Object element) {
+      return getChildren(element).length > 0;
+    }
+
+    public Object[] getElements(Object inputElement) {
+      return getChildren(inputElement);
+    }
+
+    public void dispose() {
+    }
+
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+    }
+  }
+
+  private static class SelectionLabelProvider extends LabelProvider {
+    private WorkbenchLabelProvider wlp = new WorkbenchLabelProvider();
+
+    @Override
+    public Image getImage(Object element) {
+      return wlp.getImage(((CopyrightSelectionItem) element).getResource());
+    }
+
+    @Override
+    public String getText(Object element) {
+      return wlp.getText(((CopyrightSelectionItem) element).getResource());
+    }
+  }
+
+  private static class CopyrightSelectionInput {
+    protected CopyrightSelectionItem[] rootSelection;
+
+    public CopyrightSelectionInput(CopyrightSelectionItem[] rootSelection) {
+      this.rootSelection = rootSelection;
+    }
+
+    public CopyrightSelectionItem[] getRootSelection() {
+      return rootSelection;
+    }
   }
 }
