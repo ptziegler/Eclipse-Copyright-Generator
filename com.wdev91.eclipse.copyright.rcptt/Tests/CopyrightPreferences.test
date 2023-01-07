@@ -1,0 +1,196 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: CopyrightPreferences
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _lAWtAI64Ee2wE73ikSlyGw
+Runtime-Version: 2.5.4.202210020716
+Save-Time: 1/7/23, 7:57 PM
+Testcase-Type: ecl
+Verifications: _OIMpgI64Ee2wE73ikSlyGw
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-preferences-menu | click
+get-window Preferences | get-tree | select "General/Copyright"
+
+// Change default copyright owner
+get-window Preferences | get-editbox -after [get-label "Owner:"] | set-text "Eclipse User"
+
+// Select GPL3, check header and license text
+get-window Preferences | get-list | select "GNU General Public License (GPL) version 3+"
+
+get-window Preferences | get-editbox -after [get-label "Licenses:"] | get-property text 
+    | contains "Copyright (C) ${year} ${owner}\n\n"
+    + "This program is free software: you can redistribute it and/or modify\n"
+    + "it under the terms of the GNU General Public License as published by\n"
+    + "the Free Software Foundation, either version 3 of the License, or\n"
+    + "(at your option) any later version." | verify-true
+
+get-window Preferences | get-tab-folder | get-tab-item "License file" | click
+
+with [get-window Preferences] {
+    get-editbox -after [get-label "File name:"] | get-property text | equals COPYING | verify-true
+    get-editbox -after [get-label "File content:"] | get-property text | contains "GNU GENERAL PUBLIC LICENSE\n"
+        + "                       Version 3, 29 June 2007\n\n"
+        + " Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>\n"
+        + " Everyone is permitted to copy and distribute verbatim copies\n"
+        + " of this license document, but changing it is not allowed." | verify-true
+}
+
+// Select BSD-4, check header and license text
+with [get-window Preferences] {
+    get-list | select "BSD 4-clause (Original) License"
+    get-tab-folder | get-tab-item "Header text" | click
+}
+
+get-window Preferences | get-editbox -after [get-label "Licenses:"] | get-property text 
+    | contains "Copyright (C) ${year}, ${owner}\n"
+    + "All rights reserved.\n\n"
+    + "Redistribution and use in source and binary forms, with or without\n"
+    + "modification, are permitted provided that the following conditions are met:\n\n"
+    + "1. Redistributions of source code must retain the above copyright notice,\n"
+    + "   this list of conditions and the following disclaimer.\n\n"
+    + "2. Redistributions in binary form must reproduce the above copyright notice,\n"
+    + "   this list of conditions and the following disclaimer in the documentation\n"
+    + "   and/or other materials provided with the distribution.\n\n"
+    + "3. All advertising materials mentioning features or use of this software must\n"
+    + "   display the following acknowledgement:\n"
+    + "   This product includes software developed by the <organization>.\n\n"
+    + "4. Neither the name of the copyright holder nor the names of its contributors\n"
+    + "   may be used to endorse or promote products derived from this software\n"
+    + "   without specific prior written permission." | verify-true
+
+get-window Preferences | get-tab-folder | get-tab-item "License file" | click
+
+with [get-window Preferences] {
+    get-editbox -after [get-label "File name:"] | get-property text | equals LICENSE | verify-true
+    get-editbox -after [get-label "File content:"] | get-property text 
+        | contains "Copyright (C) <year>, <copyright holder>\n"
+        + "All rights reserved.\n\n"
+        + "Redistribution and use in source and binary forms, with or without modification,\n"
+        + "are permitted provided that the following conditions are met:\n\n"
+        + "1. Redistributions of source code must retain the above copyright notice, this\n"
+        + "   list of conditions and the following disclaimer.\n\n"
+        + "2. Redistributions in binary form must reproduce the above copyright notice,\n"
+        + "   this list of conditions and the following disclaimer in the documentation\n"
+        + "   and/or other materials provided with the distribution.\n\n"
+        + "3. All advertising materials mentioning features or use of this software must\n"
+        + "   display the following acknowledgement:\n"
+        + "   This product includes software developed by the <organization>.\n\n"
+        + "4. Neither the name of the copyright holder nor the names of its contributors\n"
+        + "   may be used to endorse or promote products derived from this software without\n"
+        + "   specific prior written permission." | verify-true
+}
+
+// Rename "BSD 4-clause (Original) License" to "Modified"
+get-window Preferences | get-button "Modify..." | click -metaKeys ""
+get-window Preferences | get-window "Update copyright" | get-editbox -after [get-label "Copyright label:"] 
+    | set-text "Modified"
+
+get-window Preferences | get-window "Update copyright" | get-button OK | click -metaKeys ""
+
+get-window Preferences | get-list | get-property "getSelection().String[0]" 
+    | equals "Modified" | verify-true
+
+// Add a new license with name "Example License"
+with [get-window Preferences] {
+    get-button "Add..." | click -metaKeys ""
+    with [get-window "Add copyright"] {
+        get-editbox -after [get-label "Copyright label:"] | set-text "Example License"
+        get-button OK | click
+    }
+}
+
+get-window Preferences | get-list | get-property "getSelection().String[0]" | equals "Example License" | verify-true
+
+// Delete the newly created license
+with [get-window Preferences] {
+    get-button Delete | click -metaKeys ""
+    get-window "Confirm copyright delete" | get-button Yes | click -metaKeys ""
+}
+
+get-window Preferences | get-list | get-property "getSelection().length" | equals 0 | verify-true
+
+// Check the license header configuration
+get-window Preferences | get-tree | select "General/Copyright/Headers formats"
+
+with [get-window Preferences | get-tree -after [get-label "Headers formats"] | get-item -path Text] {
+    get-property "getText()" | equals Text | verify-true
+    get-property "getItems().TreeItem[0].getText()" | equals "JAR Manifest File" | verify-true
+    get-property "getItems().TreeItem[1].getText()" | equals "Java Properties File" | verify-true
+    get-property "getItems().TreeItem[2].getText()" | equals "Java Source File" | verify-true
+    get-property "getItems().TreeItem[3].getText()" | equals "Patch or Diff File" | verify-true
+    get-property "getItems().TreeItem[4].getText()" | equals "Refactoring History File" | verify-true
+    get-property "getItems().TreeItem[5].getText()" | equals "Refactoring History Index" | verify-true
+    get-property "getItems().TreeItem[6].getText()" | equals "Runtime log files" | verify-true
+    get-property "getItems().TreeItem[7].getText()" | equals XML | verify-true
+}
+
+with [get-window Preferences] {
+    // Check "Java Source File"
+    get-tree -after [get-label "Headers formats"] | select "Text/Java Source File"
+    
+    get-editbox -after [get-label "First line:"] | get-property text 
+        | equals "/*******************************************************************************" | verify-true
+    get-label "l:80" | get-property caption | equals "l:80" | verify-true
+
+    get-editbox -after [get-label "Line prefix:"] | get-property text
+        | equals "*" | verify-true
+    get-label "l:3" | get-property caption | equals "l:3" | verify-true
+        
+    get-editbox -after [get-label "Last line:"] | get-property text 
+        | equals "******************************************************************************/" | verify-true
+    get-label "l:80" -after [get-label "Last line:"] | get-property caption | equals "l:80"  | verify-true
+    
+    get-editbox -after [get-label "Blank lines after the header:"] | get-property text | equals 0 | verify-true
+    
+    with [get-button "Line format comment"] {
+        get-property caption | equals "Line format comment" | verify-true
+        get-property selected | equals false | verify-true
+    }
+    
+    with [get-button "Do not override the first line of code"] {
+        get-property caption | equals "Do not override the first line of code" | verify-true
+        get-property selected | equals false | verify-true
+    }
+
+    with [get-editbox -after [get-label "First line pattern:"]] {
+        get-property enablement | equals false | verify-true
+        get-property text | equals "" | verify-true
+    }
+
+    
+    // Check XML
+    get-tree -after [get-label "Headers formats"] | select "Text/XML"
+
+    get-editbox -after [get-label "First line:"] | get-property text | equals "<!--" | verify-true
+    get-label "l:4" | get-property caption | equals "l:4" | verify-true
+
+    get-editbox -after [get-label "Line prefix:"] | get-property text | equals "" | verify-true
+    get-label "l:2" | get-property caption | equals "l:2" | verify-true
+
+    get-editbox -after [get-label "Last line:"] | get-property text | equals "-->" | verify-true
+    get-label "l:3" | get-property caption | equals "l:3" | verify-true
+
+    get-editbox -after [get-label "Blank lines after the header:"] | get-property text | equals 0 | verify-true
+
+    with [get-button "Line format comment"] {
+        get-property caption | equals "Line format comment" | verify-true
+        get-property selected | equals false | verify-true
+    }
+
+    with [get-button "Do not override the first line of code"] {
+        get-property caption | equals "Do not override the first line of code" | verify-true
+        get-property selected | equals true | verify-true
+    }
+
+    with [get-editbox -after [get-label "First line pattern:"]] {
+        get-property enablement | equals true | verify-true
+        get-property text | equals "<\\?xml version=.*\\?>" | verify-true
+    }
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
