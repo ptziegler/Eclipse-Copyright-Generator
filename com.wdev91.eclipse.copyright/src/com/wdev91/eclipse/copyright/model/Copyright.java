@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2012 Eric Wuillai.
+ * Copyright (c) 2008-2012, 2023 Eric Wuillai and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.wdev91.eclipse.copyright.model;
 
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
+
 import com.wdev91.eclipse.copyright.Constants;
 
 /**
@@ -17,50 +20,52 @@ import com.wdev91.eclipse.copyright.Constants;
  */
 public class Copyright {
   /** Name of the copyright */
-  protected String label;
+  private IObservableValue<String> label = new WritableValue<>();
   /** Text to insert as header of files */
-  protected String headerText;
+  private IObservableValue<String> headerText = new WritableValue<>();
   /** File name of the license file */
-  protected String licenseFilename = Constants.EMPTY_STRING;
+  private IObservableValue<String> licenseFilename = new WritableValue<>();
   /** Text content of the license file */
-  protected String licenseText = Constants.EMPTY_STRING;
+  private IObservableValue<String> licenseText = new WritableValue<>();
 
   /**
    * Constructor. Creates a copyright with the given label.
    */
   public Copyright(String label) {
-    this.label = label.trim();
+    this.label.setValue(label.trim());
+    this.licenseFilename.setValue(Constants.EMPTY_STRING);
+    this.licenseText.setValue(Constants.EMPTY_STRING);
   }
 
   public String getHeaderText() {
-    return headerText;
+    return headerText.getValue();
   }
 
   public String getLabel() {
-    return label;
+    return label.getValue();
   }
 
   public String getLicenseFilename() {
-    return licenseFilename;
+    return licenseFilename.getValue();
   }
 
   public String getLicenseText() {
-    return licenseText;
+    return licenseText.getValue();
   }
 
   public void setHeaderText(String headerText) {
-    this.headerText = headerText;
+    this.headerText.setValue(headerText);
   }
 
   public void setLabel(String label) {
-    this.label = label.trim();
+    this.label.setValue(label.trim());
   }
 
   public void setLicenseFilename(String licenseFilename) {
-    this.licenseFilename = licenseFilename.trim();
+    this.licenseFilename.setValue(licenseFilename.trim());
   }
 
   public void setLicenseText(String licenseText) {
-    this.licenseText = licenseText;
+    this.licenseText.setValue(licenseText);
   }
 }

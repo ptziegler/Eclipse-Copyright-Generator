@@ -257,16 +257,16 @@ public class CopyrightManager {
         }
       }
       if (headerText == null) {
-        headerText = settings.getCopyright().headerText;
+        headerText = settings.getCopyright().getHeaderText();
       }
 
       // Writes the copyright header
       BufferedReader header = new BufferedReader(new StringReader(headerText));
-      writer.println(format.beginLine);
+      writer.println(format.getBeginLine());
       while ((line = header.readLine()) != null) {
-        writer.println(format.linePrefix + substitute(line, parameters));
+        writer.println(format.getLinePrefix() + substitute(line, parameters));
       }
-      writer.println(format.endLine);
+      writer.println(format.getEndLine());
 
       // Add the optional blank lines
       int bl = format.getPostBlankLines();
@@ -281,7 +281,7 @@ public class CopyrightManager {
         switch (headerStatus) {
         case 0:
           if (line.trim().length() > 0) {
-            if (line.startsWith(format.beginLine.substring(0, Math.min(format.beginLine.length(), 10)))) {
+            if (line.startsWith(format.getBeginLine().substring(0, Math.min(format.getBeginLine().length(), 10)))) {
               headerStatus = 1;
               break;
             } else {
@@ -296,13 +296,13 @@ public class CopyrightManager {
           writer.println(line);
           break;
         case 1:
-          if (format.lineCommentFormat) {
-            if (line.startsWith(format.endLine.substring(0, Math.min(format.endLine.length(), 10)))
-                || !line.startsWith(format.linePrefix)) {
+          if (format.isLineCommentFormat()) {
+            if (line.startsWith(format.getEndLine().substring(0, Math.min(format.getEndLine().length(), 10)))
+                || !line.startsWith(format.getLinePrefix())) {
               headerStatus = 2;
             }
           } else if (line.trim().length() > 0
-              && format.endLine.endsWith(line.substring(Math.max(line.length() - 5, 0)).trim())) {
+              && format.getEndLine().endsWith(line.substring(Math.max(line.length() - 5, 0)).trim())) {
             headerStatus = 2;
           }
           break;
@@ -708,7 +708,7 @@ public class CopyrightManager {
         }
 //        if ( line.startsWith(format.beginLine.substring(0, Math.min(format.beginLine.length(), 5))) ) {
         if (line.trim().length() > 0
-            && format.beginLine.startsWith(line.substring(0, Math.min(line.length(), 5)).trim())) {
+            && format.getBeginLine().startsWith(line.substring(0, Math.min(line.length(), 5)).trim())) {
           return false; // The file already contains a header
         }
       }
@@ -1142,7 +1142,7 @@ public class CopyrightManager {
     try {
       licenseFile.getParentFile().mkdirs();
       writer = new PrintWriter(licenseFile);
-      writer.write(copyright.licenseText);
+      writer.write(copyright.getLicenseText());
     } finally {
       if (writer != null) {
         writer.close();
