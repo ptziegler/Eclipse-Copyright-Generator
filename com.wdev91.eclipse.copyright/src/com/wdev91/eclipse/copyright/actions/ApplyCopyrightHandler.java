@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
-import com.wdev91.eclipse.copyright.actions.internal.ResourcesUtils;
 import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
 
 /**
@@ -34,7 +33,7 @@ import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
  * 
  * @see IWorkbenchWindowActionDelegate
  */
-public class ApplyCopyrightHandler {
+public class ApplyCopyrightHandler extends AbstractCopyrightHandler {
   private static final String PACKAGE_EXPLORER_PART_ID = "org.eclipse.jdt.ui.PackageExplorer";
 
   @Inject
@@ -46,7 +45,7 @@ public class ApplyCopyrightHandler {
   }
 
   private List<IProject> getSelectedProjects() {
-    return ResourcesUtils.getAllProjects(getSelection());
+    return getAllProjects(getSelection());
   }
 
   private IStructuredSelection getSelection() {

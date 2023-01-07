@@ -33,8 +33,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 
 import com.wdev91.eclipse.copyright.Messages;
-import com.wdev91.eclipse.copyright.actions.internal.CopyrightUtils;
-import com.wdev91.eclipse.copyright.actions.internal.ResourcesUtils;
 import com.wdev91.eclipse.copyright.model.CopyrightManager;
 import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
 
@@ -42,7 +40,7 @@ import com.wdev91.eclipse.copyright.wizards.ApplyCopyrightWizard;
  * Apply copyright... command. Allow to apply a copyright on selected resources
  * from a popup menu. Mainly concern Eclipse navigator and package explorer.
  */
-public class ApplyCopyrightOnSelectionHandler {
+public class ApplyCopyrightOnSelectionHandler extends AbstractCopyrightHandler {
   @Inject
   @Named(ACTIVE_SHELL)
   private Shell shell;
@@ -50,13 +48,13 @@ public class ApplyCopyrightOnSelectionHandler {
   @Execute
   public void execute(@Named(ACTIVE_SELECTION) IStructuredSelection selection) throws CoreException {
     // Creates list of selected files
-    List<IFile> resources = ResourcesUtils.getAllFiles(selection);
+    List<IFile> resources = getAllFiles(selection);
 
     // List of projects containing the selected files
-    List<IProject> projects = ResourcesUtils.getAllProjects(resources);
+    List<IProject> projects = getAllProjects(resources);
 
     // Apply the copyrights
-    if (CopyrightUtils.shouldOpenCopyrightWizard(projects)) {
+    if (shouldOpenCopyrightWizard(projects)) {
       ApplyCopyrightWizard.openWizard(shell, projects, resources);
     } else {
       String title = Messages.ApplyCopyrightOnSelectionHandler_messageTitle;
