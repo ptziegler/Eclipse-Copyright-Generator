@@ -22,6 +22,7 @@
         <flatten-version>1.3.0</flatten-version>
         <tycho-version>2.7.5</tycho-version>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       </properties>
       
     <distributionManagement>
